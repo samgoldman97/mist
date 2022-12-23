@@ -1,0 +1,69 @@
+launcher_args: {experiment_name: 2022_10_30_contrastive_csi_prospective,
+  script_name: run_scripts/train_contrastive.py, 
+  slurm_script: launcher_scripts/generic_slurm.sh, 
+  visible_devices: [3], 
+  launch_method: slurm, 
+}
+universal_args:
+  _slurm_args:
+  - {_num_gpu: 1, cpus-per-task: 10, job-name: ms-train, mem-per-cpu: 12G, time: '1-18:00:00'} 
+
+  debug: [false]
+  seed: [1]
+  dataset-name: [csi2022]
+  compound-lib: [intpubchem]
+  splitter-name: [preset]
+  split-sizes:
+  - [0.95, 0.05, 0]
+
+  # Data aug
+  augment-data: [true]
+  augment-prob: [0.5]
+  remove-prob: [0.5]
+  remove-weights: [exp]
+  inten-prob: [0.1]
+  add-forward-specs: [true]
+
+  # Use forward augmentations
+  frac-orig: [0.2]
+  dist-name: [cosine] 
+
+  # Contrastive loss
+  contrastive-loss: [nce]
+  contrastive-decoy-pool: [mean]
+  contrastive-latent: [h0] 
+  contrastive-weight: [0.6]
+  contrastive-scale: [16] 
+  contrastive-bias: [0.0] 
+  num-decoys: [64]
+  max-db-decoys: [256]
+  decoy-norm-exp: [4] 
+  contrastive-latent-size: [null]
+  negative-strategy: [hardisomer_tani_pickled]
+
+
+  learning-rate: [0.00057]
+  weight-decay: [1.0e-7]
+  min-lr: [5e-06] 
+  scheduler: [True]
+  lr-decay-time: [10000] 
+  lr-decay-frac: [0.7138]
+  patience: [10]
+  max-epochs: [500]
+  gpus: [1]
+  batch-size: [32]
+  num-workers: [10]
+  persistent-workers: [false]
+  cache-featurizers: [true]
+
+iterative_args:
+  - ckpt-file: [
+      "results/2202_10_28_mist_csi_prospective/2022_10_28-1425_584082_6b32da22dff9710cd645ef167f2a7afb/prospective/best.ckpt",
+      "results/2202_10_28_mist_csi_prospective/2022_10_28-1425_584466_709b3a474ebfd9821d47b180e1114820/prospective/best.ckpt", 
+      "results/2202_10_28_mist_csi_prospective/2022_10_28-1425_584750_0d1dbe4dd714b282c1ffb687bbd673c3/prospective/best.ckpt",
+      "results/2202_10_28_mist_csi_prospective/2022_10_28-1425_585013_a2ac95b7dfe012615816ae4b950433b8/prospective/best.ckpt",
+      "results/2202_10_28_mist_csi_prospective/2022_10_28-1425_585270_56d83a8f1e20c6ea51f2c04c64cdd1b3/prospective/best.ckpt",
+    ]
+    persistent-workers: [false]
+    split-file: [data/paired_spectra/csi2022/splits/prospective_split.csv]
+    forward-aug-folder: [data/paired_spectra/csi2022/csi_spec_preds_fold_prospective/]

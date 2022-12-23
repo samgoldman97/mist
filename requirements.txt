@@ -1,0 +1,8 @@
+git+https://github.com/LiyuanLucasLiu/RAdam
+git+https://github.com/ray-project/ray_lightning#ray_lightning
+sklearn
+pathos
+hyperopt
+setuptools==59.5.0
+ray[air]
+CairoSVG
