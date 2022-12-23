@@ -157,15 +157,15 @@ def embed_specs():
     new_entry["names"] = names
 
     # Dump to output file
-    out_name = kwargs.get("output_name", None)
-    if  out_name is not None:
+    out_name = kwargs.get("out_name", None)
+    if out_name is not None:
         f_name = Path(save_dir) / out_name
     else:
         ctr = 0
         f_name = Path(save_dir) / f"embed_{dataset_name}_{ctr}.p"
         while (f_name).exists():
             ctr += 1
-            f_name = save_dir / f"embed_{dataset_name}_{ctr}.p"
+            f_name = Path(save_dir) / f"embed_{dataset_name}_{ctr}.p"
 
     # Output is new_entry
     with open(f_name, "wb") as fp:

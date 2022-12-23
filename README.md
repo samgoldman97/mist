@@ -19,17 +19,17 @@ _Samuel Goldman, Jeremy Wohlwend, Martin Strazar, Guy Haroush, Ramnik J. Xavier,
 
 ## Install & setup <a name="setup"></a>
 
-After git cloning the repository, the enviornment and package can be installed:
+After git cloning the repository, the enviornment and package can be installed.  Please note that the enviornment downloaded attempts to utilize cuda11.1. Please comment this line out in enviornment.yml if you do not plan to use gpu support prior to the commands below. We strongly recommend replacing conda with [mamba](https://mamba.readthedocs.io/en/latest/installation.html) for fast install (i.e., `mamba env creaete -f environment.yml`).
 
 ```
-conda env create -f enviornment.yml
-pip install -r requirements.txt
-python setup.py install
+conda env create -f environment.yml
 conda activate ms-gen
+pip install -r requirements.txt
+python setup.py develop
 ```
 
-Please note that the enviornment downloaded attempts to utilize cuda11.1.
-Please comment this out if it causes errors.
+This environment was tested on Ubuntu 20.04.1. It takes roughly 10 minutes to install using Mamba. 
+
 
 ### SIRIUS <a name="sirius"></a>
 
@@ -47,12 +47,13 @@ After creating a python enviornment, pretrained models can be used to:
 
 1. Predict fingerprints from spectra  (`quickstart/model_predictions/fp_preds_quickstart.p`)  
 2. Annotate spectra by ranking candidates in a reference smiles list (`quickstart/model_predictions/smiles_outputs.tsv`)  
-3. Embed spectra into a dense continuous space  (`quickstart/model_predictions/embed_quickstart_0.p`)   
+3. Embed spectra into a dense continuous space  (`quickstart/model_predictions/contrastive_embed.p`)   
 
 To showcase these capabilities, we include an MGF file, `quickstart/quickstart.mgf` as exported by MZMine for use by SIRIUS (a sample from the Mills et al. data), along with a set of sample smiles `quickstart/lookup_smiles.txt`. Running the following pipeline will download pretrained models, reformat the mgf file into labels files, run sirius on the MGF file to identify best chemical formula, prepare the lookup library as an HDF file, and apply the pretrained models accordingly: 
 
 ```
-source quickstart/00_download_model.sh
+conda activate ms-gen
+source quickstart/00_download_models.sh
 python quickstart/01_reformat_mgf.py
 source quickstart/02_run_sirius.sh
 python quickstart/03_summarize_sirius.py
@@ -69,7 +70,7 @@ Training models requires the use of paired mass spectra data and molecule annota
 
 1. **csi2022**: H+ Spectra from GNPS, NIST, MONA, and others kindly provided by  
    Kai Durkhop from the SIRIUS and CSI:FingerID team. This dataset is used to  
-   complete most benchmarking done.      
+   complete most benchmarking done.
 2. **canopus\_train**: Public data extracted from GNPS and prepared by the 2021 CANOPUS methods paper.  
 3. **mills**:  A dataset of unlabeled spectra extracted from the IBD cohort study Mills et al. and used for prospective testing.  
 
@@ -100,7 +101,7 @@ For those interested in recreating our pipeline, we provide details to train a m
 
 ```
 cd data/paired_spectra/
-wget https://www.dropbox.com/s/mq5rtcuty0s54le/canopus_train_public.tar
+wget https://www.dropbox.com/s/8jn6sz0o3srmtev/canopus_train_public.tar
 tar -xvf canopus_train_public.tar
 rm canopus_train_public.tar
 cd ../../
@@ -111,7 +112,8 @@ cd ../../
 A mist model can be trained using the command `python run_scripts/train_mist.py`. The following example trains with 0 gpus (sped up by GPU utilization):
 
 ```
-python3 run_scripts/train_mist.py --cache-featurizers --dataset-name 'canopus_train_public' --fp-names morgan4096 --num-workers 12 --seed 1 --gpus 0 --split-file 'data/paired_spectra/canopus_train/splits/canopus_hplus_100_0.csv' --splitter-name 'preset' --augment-data --augment-prob 0.5 --batch-size 128 --inten-prob 0.1 --remove-prob 0.5 --remove-weights 'exp' --iterative-preds 'growing' --iterative-loss-weight 0.4 --learning-rate 0.00077 --weight-decay 1e-07 --max-epochs 600 --min-lr 0.0001 --lr-decay-time 10000 --lr-decay-frac 0.95 --hidden-size 256 --num-heads 8 --pairwise-featurization --peak-attn-layers 2 --refine-layers 4 --set-pooling 'cls' --spectra-dropout 0.1 --single-form-encoder --recycle-form-encoder --use-cls --cls-type 'ms1' --loss-fn 'cosine' --magma-aux-loss --frag-fps-loss-lambda 8 --magma-modulo 512 --patience 30 --save-dir 'mist_fp_model' --save-dir results/model_train_demos/mist_fp_model
+mkdir results/model_train_demos
+python3 run_scripts/train_mist.py --cache-featurizers --dataset-name 'canopus_train_public' --fp-names morgan4096 --num-workers 12 --seed 1 --gpus 0 --split-file 'data/paired_spectra/canopus_train_public/splits/canopus_hplus_100_0.csv' --splitter-name 'preset' --augment-data --augment-prob 0.5 --batch-size 128 --inten-prob 0.1 --remove-prob 0.5 --remove-weights 'exp' --iterative-preds 'growing' --iterative-loss-weight 0.4 --learning-rate 0.00077 --weight-decay 1e-07 --max-epochs 600 --min-lr 0.0001 --lr-decay-time 10000 --lr-decay-frac 0.95 --hidden-size 256 --num-heads 8 --pairwise-featurization --peak-attn-layers 2 --refine-layers 4 --set-pooling 'cls' --spectra-dropout 0.1 --single-form-encoder --recycle-form-encoder --use-cls --cls-type 'ms1' --loss-fn 'cosine' --magma-aux-loss --frag-fps-loss-lambda 8 --magma-modulo 512 --patience 30 --save-dir 'mist_fp_model' --save-dir results/model_train_demos/mist_fp_model
 ``` 
 
 For illustrative purposes, this call does not utilize forward augmented data.
@@ -123,7 +125,7 @@ Model predictions can be generated using the arguments specified by `run_scripts
 As a baseline, we also train FFN models similar to MetFID using the command `python run_scripts/train_ffn_binned.py`. Example usage: 
 
 ```
-python3 run_scripts/train_ffn_binned.py --cache-featurizers --dataset-name 'canopus_train_public' --fp-names morgan4096 --num-workers 12 --seed 1 --gpus 0 --split-file 'data/paired_spectra/canopus_train/splits/canopus_hplus_100_0.csv' --splitter-name 'preset' --augment-prob 0.5 --batch-size 128 --inten-prob 0.1 --remove-prob 0.5 --remove-weights 'exp' --iterative-loss-weight 0.5 --iterative-preds 'none' --learning-rate 0.00087 --weight-decay 1e-07 --max-epochs 600 --min-lr 1e-05 --lr-decay-time 10000 --hidden-size 512 --num-spec-layers 2 --num-bins 11000 --spectra-dropout 0.3 --patience 60 --loss-fn 'cosine' --save-dir 'ffn_fp_model' --save-dir results/model_train_demos/ffn_fp_model
+python3 run_scripts/train_ffn_binned.py --cache-featurizers --dataset-name 'canopus_train_public' --fp-names morgan4096 --num-workers 12 --seed 1 --gpus 0 --split-file 'data/paired_spectra/canopus_train_public/splits/canopus_hplus_100_0.csv' --splitter-name 'preset' --augment-prob 0.5 --batch-size 128 --inten-prob 0.1 --remove-prob 0.5 --remove-weights 'exp' --iterative-loss-weight 0.5 --iterative-preds 'none' --learning-rate 0.00087 --weight-decay 1e-07 --max-epochs 600 --min-lr 1e-05 --lr-decay-time 10000 --hidden-size 512 --num-spec-layers 2 --num-bins 11000 --spectra-dropout 0.3 --patience 60 --loss-fn 'cosine' --save-dir 'ffn_fp_model' --save-dir results/model_train_demos/ffn_fp_model
 ```
 
 The same `run_scripts/pred_fp.py` script can be used to make predicitons with a trained model.

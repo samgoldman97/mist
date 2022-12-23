@@ -984,4 +984,5 @@ class PeakFormulaTest(PeakFormula):
 
     def __init__(self, **kwargs):
         kwargs["magma_aux_loss"] = False
+        kwargs["add_forward_specs"] = False
         super().__init__(**kwargs)

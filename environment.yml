@@ -6,7 +6,7 @@ dependencies:
 - python=3.8.*
 - matplotlib=3.4.*
 - rdkit=2021.03.*
-- cudatoolkit=11.1 # may need to comment if cpu only
+#- cudatoolkit=11.1 # may need to comment if cpu only
 - pytorch-lightning=1.6.* #1.7
 - pytorch::torchvision
 - torchmetrics=0.4.*
@@ -18,6 +18,5 @@ dependencies:
 - seaborn=0.11.*
 - h5py
 - ray-tune
-- ray-air
 - umap-learn
 - optuna

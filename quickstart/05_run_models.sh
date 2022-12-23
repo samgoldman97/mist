@@ -27,4 +27,4 @@ python3 analysis/retrieval/create_smi_output.py --ranking $ranking_file --save-n
 # Contrastive embed
 python3 run_scripts/embed_contrastive.py --num-workers 0 --model  \
 $contrast_ckpt --dataset-name quickstart --save-dir $output_dir --labels-name \
-$labels --out-name "contrastive_embed"
+$labels --out-name "contrastive_embed.p"
