@@ -1,5 +1,7 @@
 # 🌫️ MIST: Metabolite Inference with Spectrum Transformers
 
+[![DOI](https://zenodo.org/badge/564051299.svg)](https://zenodo.org/badge/latestdoi/564051299)
+
 This repository provides implementations and code examples for _Metabolite Inference with Spectrum Transformers_ (MIST). MIST models can be used to predict molecular fingerprints from tandem mass spectrometry data and, when trained in a contratsive learning framework, enable embedding and structure annotation by database lookup. Rather than directly embed binned spectra, MIST applies a transformer architecture to directly encode and learn to represent collections of chemical formula. 
 
 _Samuel Goldman, Jeremy Wohlwend, Martin Strazar, Guy Haroush, Ramnik J. Xavier, Connor W. Coley_
