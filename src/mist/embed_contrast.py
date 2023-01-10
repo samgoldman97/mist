@@ -59,7 +59,7 @@ def embed_specs():
 
     # Load saved model
     model_ckpt = kwargs.get("model_ckpt")
-    pretrain_ckpt = torch.load(model_ckpt)
+    pretrain_ckpt = torch.load(model_ckpt, map_location=torch.device('cpu'))
     main_hparams = pretrain_ckpt["hyper_parameters"]
 
     # Set save dir and setup model

@@ -67,7 +67,7 @@ def run_fp_pred():
     model_ckpt = kwargs.get("model_ckpt")
 
     # Build model
-    pretrain_ckpt = torch.load(model_ckpt)
+    pretrain_ckpt = torch.load(model_ckpt, map_location=torch.device('cpu'))
     main_hparams = pretrain_ckpt["hyper_parameters"]
 
     # Replace save_dir in kwargs if it's None with the model's
