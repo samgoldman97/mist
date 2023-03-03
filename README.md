@@ -216,7 +216,7 @@ We ask users to cite [MIST](https://www.biorxiv.org/content/10.1101/2022.12.30.5
 
 Goldman, Samuel, et al. "Annotating metabolite mass spectra with domain-inspired chemical formula transformers." bioRxiv (2022): 2022-12.
 
-MIST also builds on a number of other projects, ideas, and software including SIRIUS, MAGMa substructure labeling, the canopus\_train data, the Mills et al. IBD data, NPClassifier to classify compounds, PubChem as a retrieval library, and HMDB as a retrieval library. Please consider citing the following papers when relevant:  
+MIST also builds on a number of other projects, ideas, and software including SIRIUS, MAGMa substructure labeling, the canopus\_train data, the Mills et al. IBD data, NPClassifier to classify compounds, PubChem as a retrieval library, and HMDB as a retrieval library. Please consider citing the following full list of papers when relevant:  
  
 1. Goldman, Samuel, et al. "Annotating metabolite mass spectra with domain-inspired chemical formula transformers." bioRxiv (2022): 2022-12.  
 2. Kai Dührkop, Markus Fleischauer, Marcus Ludwig, Alexander A. Aksenov, Alexey V. Melnik, Marvin Meusel, Pieter C. Dorrestein, Juho Rousu, and Sebastian Böcker, SIRIUS 4: Turning tandem mass spectra into metabolite structure information. Nature Methods 16, 299–302, 2019.   
