@@ -21,7 +21,7 @@ _Samuel Goldman, Jeremy Wohlwend, Martin Strazar, Guy Haroush, Ramnik J. Xavier,
 
 ## Install & setup <a name="setup"></a>
 
-After git cloning the repository, the enviornment and package can be installed.  Please note that the enviornment downloaded attempts to utilize cuda11.1. Please comment this line out in enviornment.yml if you do not plan to use gpu support prior to the commands below. We strongly recommend replacing conda with [mamba](https://mamba.readthedocs.io/en/latest/installation.html) for fast install (i.e., `mamba env creaete -f environment.yml`).
+After git cloning the repository, the enviornment and package can be installed.  Please note that the enviornment downloaded attempts to utilize cuda11.1. Please comment this line out in enviornment.yml if you do not plan to use gpu support prior to the commands below. We strongly recommend replacing conda with [mamba](https://mamba.readthedocs.io/en/latest/installation.html) for fast install (i.e., `mamba env create -f environment.yml`).
 
 ```
 conda env create -f environment.yml
