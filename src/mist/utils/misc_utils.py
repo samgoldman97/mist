@@ -1,4 +1,5 @@
 """misc_utils.py"""
+from collections import defaultdict
 from pathlib import Path
 import sys
 import copy
@@ -161,6 +162,30 @@ def bin_spectra(
             binned_spec[spec_index, bin_index] += spec_val
 
     return binned_spec
+
+
+def merge_norm_spectra(spec_tuples, precision=4) -> np.ndarray:
+    """ merge_norm_spectra.
+
+    Take a list of mz, inten tuple arrays and merge them by 4 digit precision
+    
+    """
+    mz_to_inten_pair = {}
+    for i in spec_tuples:
+        for tup in i:
+            mz, inten = tup
+            mz_ind = np.round(mz, precision)
+            cur_pair = mz_to_inten_pair.get(mz_ind)
+            if cur_pair is None:
+                mz_to_inten_pair[mz_ind] = tup
+            elif inten > cur_pair[1]:
+                mz_to_inten_pair[mz_ind] = (mz_ind, inten)
+            else:
+                pass
+
+    merged_spec = np.vstack([v for k,v  in mz_to_inten_pair.items() ])
+    merged_spec[:, 1] = merged_spec[:, 1] / merged_spec[:, 1].max()
+    return merged_spec
 
 
 def norm_spectrum(binned_spec: np.ndarray) -> np.ndarray:

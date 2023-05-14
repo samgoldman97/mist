@@ -14,6 +14,7 @@ from datetime import datetime
 from mist import utils
 
 base_output_folder = Path("results/2022_11_03_prospective_analysis/")
+base_output_folder = Path("results/2023_05_10_prospective_reanalysis_forms//")
 base_output_folder.mkdir(exist_ok=True)
 
 labels_name = "labels_putative_h_plus.tsv" # Prefix for labels

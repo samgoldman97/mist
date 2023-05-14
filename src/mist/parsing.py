@@ -19,7 +19,7 @@ def add_hyperopt_args(parser):
     # Tune args
     ha = parser.add_argument_group("Hyperopt Args")
     ha.add_argument("--cpus-per-trial", default=1, type=int)
-    ha.add_argument("--gpus-per-trial", default=1, type=int)
+    ha.add_argument("--gpus-per-trial", default=1, type=float)
     ha.add_argument("--num-h-samples", default=50, type=int)
     ha.add_argument("--grace-period", default=60 * 15, type=int)  # 5)#60*15, type=int)
     ha.add_argument("--max-concurrent", default=10, type=int)
@@ -83,6 +83,13 @@ def add_dataset_args(parser):
         choices=["quadratic", "uniform", "exp"],
         default="exp",
     )
+
+    # Define arg inten-transform
+    da.add_argument(
+        "--inten-transform", default="float", action="store", 
+        choices=["float", "cat", "log", "zero"]
+    )
+
     da.add_argument(
         "--inten-prob", default=0.1, type=float, help="Prob of rescaling a peak"
     )
@@ -108,6 +115,87 @@ def add_dataset_args(parser):
         help="Frac original data going into each batch",
     )
     return da
+
+
+def add_xformer_args(parser):
+    ma = parser.add_argument_group("Model args")
+    ma.add_argument(
+        "--loss-fn",
+        default="bce",
+        action="store",
+        type=str,
+        help="Loss fn name",
+        choices=["bce", "mse", "cosine"],
+    )
+    ma.add_argument(
+        "--fp-names",
+        action="store",
+        nargs="+",
+        help="List of fp names for pred",
+        default=["morgan2048"],
+        choices=[
+            "morgan512",
+            "morgan1024",
+            "morgan2048",
+            "morgan_project",
+            "morgan4096",
+            "morgan4096_3",
+            "maccs",
+            "map2048",
+            "maccs-cdk",
+            "klekota-roth",
+            "cdk",
+            "pubchem",
+            "FP3",
+            "contextgin",
+            "csi",
+        ],
+    )
+    ma.add_argument(
+        "--shuffle-train",
+        default=False,
+        action="store_true",
+        help="If true, shuffle target order",
+    )
+    ma.add_argument(
+        "--iterative-preds",
+        default="none",
+        action="store",
+        choices=["none", "growing"],
+        help=(
+            "If not none, re-stack predictions iteratively:\n"
+            " growing: Growing larger modulo fps"
+        ),
+    )
+    ma.add_argument(
+        "--iterative-loss-weight",
+        default=0.5,
+        type=float,
+        help="Iterative loss weight for each layer",
+    )
+    ma.add_argument(
+        "--refine-layers", default=1, type=int, help="Number of refinement layrs"
+    )
+    ma.add_argument("--hidden-size", type=int, help="NN Hidden size", default=50)
+    ma.add_argument(
+        "--num-spec-layers",
+        type=int,
+        help="number of spectra encoder layers",
+        default=2,
+    )
+    ma.add_argument(
+        "--spectra-dropout",
+        type=float,
+        default=0.1,
+        help="Amount of dropout in spectra encoder",
+    )
+    ma.add_argument(
+        "--cleaned-peaks",
+        action="store_true",
+        help="If true, use SIRIUS processed data peaks",
+        default=False,
+    )
+    return ma
 
 
 def add_ffn_args(parser):
@@ -218,7 +306,6 @@ def add_mist_args(parser):
     ma.add_argument(
         "--top-layers",
         default=1,
-        choices=[1, 2],
         type=int,
         help="Number of top layers required",
     )

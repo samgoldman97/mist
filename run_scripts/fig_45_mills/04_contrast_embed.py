@@ -12,6 +12,7 @@ dataset_names = ["mills", "csi2022"]
 labels_names = ["labels_with_putative_form.tsv", "labels.tsv"] # Prefix for labels
 
 res_dir = Path("results/2022_12_01_prospective_analysis")
+res_dir = Path("results/2023_05_10_prospective_reanalysis_forms/")
 num_workers = 16
 res_dir.mkdir(exist_ok=True)
 

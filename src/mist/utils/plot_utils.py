@@ -8,6 +8,10 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+import cairosvg
+from rdkit import Chem
+from rdkit.Chem import Draw
+from rdkit.Chem.Draw import rdMolDraw2D
 
 def set_style():
     """set_style"""
@@ -54,3 +58,14 @@ def set_size(w, h, ax=None):
     figw = float(w) / (r - l)
     figh = float(h) / (t - b)
     ax.figure.set_size_inches(figw, figh)
+
+
+def export_mol(mol, name, width=100, height=100):
+    """Save substance structure as PDF"""
+    # Render high resolution molecule
+    drawer = rdMolDraw2D.MolDraw2DSVG(width, height, )
+    opts = drawer.drawOptions()        
+    opts.bondLineWidth = 1
+    drawer.DrawMolecule(mol, )
+    drawer.FinishDrawing()
+    cairosvg.svg2pdf(bytestring=drawer.GetDrawingText().encode(), write_to=str(name))

@@ -1,13 +1,14 @@
 # 🌫️ MIST: Metabolite Inference with Spectrum Transformers
 
-[![DOI](https://zenodo.org/badge/564051299.svg)](https://zenodo.org/badge/latestdoi/564051299)
+[![DOI](https://zenodo.org/badge/564051299.svg)](https://zenodo.org/badge/latestdoi/564051299)  
+Version v1.0.0 10.5281/zenodo.7897299	
 
 This repository provides implementations and code examples for [_Metabolite Inference with Spectrum Transformers_ (MIST)](https://www.biorxiv.org/content/10.1101/2022.12.30.522318v1). MIST models can be used to predict molecular fingerprints from tandem mass spectrometry data and, when trained in a contratsive learning framework, enable embedding and structure annotation by database lookup. Rather than directly embed binned spectra, MIST applies a transformer architecture to directly encode and learn to represent collections of chemical formula. 
 
 _Samuel Goldman, Jeremy Wohlwend, Martin Strazar, Guy Haroush, Ramnik J. Xavier, Connor W. Coley_
 
 ![Model graphic](MIST_graphic.png)
-
+#
 
 ## Table of Contents
 
@@ -43,6 +44,11 @@ unzip sirius-4.9.3-linux64-headless.zip
 rm sirius-4.9.3-linux64-headless.zip
 ```
 
+Note that for revisions and direct comparison with CSI:FingerID, SIRIUS 5.0 is used with documentation [here](https://boecker-lab.github.io/docs.sirius.github.io/account-and-license/). Users must receive a license first.
+
+
+
+
 ## Quick start <a name="quickstart"></a>
 
 After creating a python enviornment, pretrained models can be used to: 
@@ -64,6 +70,8 @@ source quickstart/05_run_models.sh
 ```
 
 Output predictions can be found in `quickstart/model_predictions` and are included by default with the repository. 
+
+Note that permanent links to pretrained models can be downloaded from 
 
 
 ## Data <a name="data"></a>
@@ -103,7 +111,8 @@ For those interested in recreating our pipeline, we provide details to train a m
 
 ```
 cd data/paired_spectra/
-wget https://www.dropbox.com/s/8jn6sz0o3srmtev/canopus_train_public.tar
+#wget https://www.dropbox.com/s/8jn6sz0o3srmtev/canopus_train_public.tar
+wget https://zenodo.org/record/7897324/files/canopus_train_public.tar
 tar -xvf canopus_train_public.tar
 rm canopus_train_public.tar
 cd ../../

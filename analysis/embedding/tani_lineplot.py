@@ -47,14 +47,21 @@ def get_args():
         "--labels-file", default="data/paired_spectra/csi2022/labels.tsv"
     )
     parser.add_argument(
-        "--s2v-embed-file", default="results/2022_10_10_embedded_outs/spec2vec_out.p"
+        "--s2v-embed-file", 
+        default="results/2023_04_30_embed_matchms/spec2vec_out.p",
+        #default="results/2022_10_10_embedded_outs/spec2vec_out.p"
+    )
+    parser.add_argument(
+        "--ms2deep-embed-file", default="results/2023_04_30_embed_matchms/ms2deepscore_out.p"
     )
     parser.add_argument(
         "--mist-embed-file",
-        default="results/2022_10_07_contrastive_best_csi/2022_10_07-1835_891915_8bdcd80687294392e00d01ae2eec1cad/embed/embed_csi2022_0.p",
+        default="results/2022_10_27_contrastive_best_ensemble/embeds/embed_csi2022_0.p"
     )
     parser.add_argument(
-        "--mod-cos-file", default="results/2022_10_10_embedded_outs/cos_out.p"
+        "--mod-cos-file", 
+        default="results/2023_04_30_embed_matchms/cosine_out.p",
+        #default="results/2022_10_10_embedded_outs/cos_out.p"
     )
     parser.add_argument("--save-name", default=None)
     parser.add_argument("--png", default=False, action="store_true")
@@ -72,6 +79,7 @@ def main():
 
     mist_embed_file = args.mist_embed_file
     s2v_embed_file = args.s2v_embed_file
+    ms2deep_embed_file = args.ms2deep_embed_file
     mod_cos_file = args.mod_cos_file
     label_file = args.labels_file
 
@@ -82,7 +90,7 @@ def main():
         output_dir = Path(mist_embed_file).parent / "plots"
         output_dir.mkdir(exist_ok=True)
         ext = "png" if png else "pdf"
-        save_name = output_dir / f"spec2vec_compare.{ext}"
+        save_name = output_dir / f"spec2vec_compare_revision.{ext}"
 
     # MIST embeds
     mist_embeddings = pickle.load(open(mist_embed_file, "rb"))
@@ -108,6 +116,21 @@ def main():
     s2v_mask = [i in embed_names_set for i in s2v_names]
     s2v_embeds = s2v_embeds[s2v_mask]
     s2v_names = s2v_names[s2v_mask]
+
+
+    # MS2Deep embeds
+    ms2deep = pickle.load(open(ms2deep_embed_file, "rb"))
+    ms2deep_embeds, ms2deep_names = ms2deep["embeds"], np.array(ms2deep["names"])
+
+    # Extract and subset ms2deep
+    ms2deep_name_sort = np.argsort(ms2deep_names)
+    ms2deep_embeds = ms2deep_embeds[ms2deep_name_sort]
+    ms2deep_names = ms2deep_names[ms2deep_name_sort]
+    embed_names_set = set(mist_names)
+    ms2deep_mask = [i in embed_names_set for i in ms2deep_names]
+    ms2deep_embeds = ms2deep_embeds[ms2deep_mask]
+    ms2deep_names = ms2deep_names[ms2deep_mask]
+
 
     # Get modified cosine
     mod_cos_out = pickle.load(open(mod_cos_file, "rb"))
@@ -183,6 +206,18 @@ def main():
     vals_by_s2v_sort = all_pairs_flat[sorted_by_s2v[::-1]]
     avg_percentiles_s2v = [np.mean(vals_by_s2v_sort[:i]) for i in pair_cutoffs]
 
+    print("Computing ms2deep dists")
+
+    # Get spec2vec
+    num_items_ms2deep = ms2deep_embeds.shape[0]
+    ms2deep_all_by_all = cosine_similarity(ms2deep_embeds, ms2deep_embeds)
+    ms2deep_all_by_all[np.arange(num_items_ms2deep), np.arange(num_items_ms2deep)] = -10
+    flattened_ms2deep = ms2deep_all_by_all.flatten()
+    sorted_by_ms2deep = np.argsort(flattened_ms2deep)
+    vals_by_ms2deep_sort = all_pairs_flat[sorted_by_ms2deep[::-1]]
+    avg_percentiles_ms2deep = [np.mean(vals_by_ms2deep_sort[:i]) for i in pair_cutoffs]
+
+
     print("Computing rnd dists")
 
     # random baseline
@@ -203,15 +238,18 @@ def main():
 
     # Plotting code
     colors = ["#841619", "#EECCBE", "#98BFC4", "#7D8FB9", "#245F92"]
-    colors = ["#1D2452", "#6F84AE", "#98BFC4", "#EECCBE", "#F2CA9A"]
+    colors = ["#1D2452", "#6F84AE",  "#69B367", "#98BFC4",
+              "#EECCBE", "#F2CA9A"]
     ax_figsize = (1.25, 1.85)
     fig = plt.figure(figsize=(ax_figsize))
     ax = fig.gca()
     for name, percentiles, color in zip(
-        ["Upper bound", "MIST", "Spec2Vec", "Modified Cosine", "Random"],
+        ["Upper bound", "MIST",  "MS2DeepScore", "Spec2Vec",
+         "Modified Cosine", "Random"],
         [
             avg_percentiles_max,
             avg_percentiles_mist,
+            avg_percentiles_ms2deep,
             avg_percentiles_s2v,
             avg_percentiles_mod_cos,
             avg_percentiles_rnd,

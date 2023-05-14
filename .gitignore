@@ -9,6 +9,7 @@ lightning_logs/
 logs
 results
 sirius
+sirius5
 .idea
 .vscode
 output
@@ -18,6 +19,8 @@ compute_query_fps.py
 *.pth
 tags
 pretrained_models
+spec2vec*
+*.hdf5
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

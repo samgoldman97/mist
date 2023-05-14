@@ -13,11 +13,11 @@ fp_model_dir = "results/2022_10_28_mist_csi_prospective/"
 contrastive_model_dir = "results/2022_10_30_contrastive_csi_prospective/"
 
 base_output_folder = Path("results/2022_12_01_prospective_analysis/")
+base_output_folder = Path("results/2023_05_10_prospective_reanalysis_forms/")
 base_output_folder.mkdir(exist_ok=True)
 
 dataset_names = ["mills"]
 retrieval_dbs = ["inthmdb", "intpubchem"]
-
 
 # Prefix for labels
 labels_name = "labels_with_putative_form.tsv"
@@ -57,11 +57,10 @@ for dataset_name in dataset_names:
 
         # Step 3: Run fp retrieval 
         fp_cmd = f"python3 run_scripts/retrieval_fp.py --labels-file {labels_file} --dist-name cosine --num-workers {num_workers} --hdf-prefix  {hdf_prefix} --fp-pred-file {merged_fp_save_name} --save-dir {fp_retrieval_savedir}"
-        fp_out = list(Path(fp_retrieval_savedir).glob("*.p"))[0]
-        #fp_out = merged_fp_save_name
 
-        # Replace with merged_fp_preds --> merged_fp_save_name
+        # Replaced
         #subprocess.run(fp_cmd, shell=True)
+        fp_out = list(Path(fp_retrieval_savedir).glob("*.p"))[0]
 
         # Step 4: Run contrastive retrieval
         contrast_retrieval_savedir = save_dir / "contrast_retrieval"
@@ -80,20 +79,21 @@ for dataset_name in dataset_names:
         in_file_str = " ".join([str(i) for i in contrast_ret_files])
         cmd = f"python analysis/retrieval/ensemble_model_dists.py --in-files {in_file_str} --out-file {contrast_out_file}"
         print(cmd)
-        subprocess.call(cmd, shell=True)
+        #subprocess.call(cmd, shell=True)
 
         # Step 6: Average contrastive files
         save_name = save_dir / "final_retrieval.p"
         python_avg = f"python3 analysis/retrieval/avg_model_dists.py --first-ranking {fp_out} --second-ranking {contrast_out_file} --lam 0.3 --save-name {save_name}"
         print(python_avg)
-        subprocess.run(python_avg, shell=True)
+        #subprocess.run(python_avg, shell=True)
 
         # Step 7: Extract smiles
         smi_outs = save_dir / "smiles_outputs.tsv"
         names_file = str(hdf_prefix) + "_names.p"
         extract_script = f"python analysis/retrieval/create_smi_output.py --ranking {save_name} --save-name {smi_outs} --k 5 --names-file {names_file}"
+
         print(extract_script)
-        subprocess.run(extract_script, shell=True)
+        #subprocess.run(extract_script, shell=True)
 
         # Step 8: Classify these
         classif_script = f"python analysis/datasets/pred_classify.py --pred-file {smi_outs} --save-name {smi_outs.parent / 'chem_classes.p'}"

@@ -3,6 +3,15 @@
 import pandas as pd
 
 dataset_name = "mills"
+#labels_file = f"data/paired_spectra/{dataset_name}/labels.tsv"
+#labels_file_out = f"data/paired_spectra/{dataset_name}/labels_putative.tsv"
+#labels_file_hplus_out = f"data/paired_spectra/{dataset_name}/labels_putative_h_plus.tsv"
+#labels_file_form_out = (
+#    f"data/paired_spectra/{dataset_name}/labels_with_putative_form.tsv"
+#)
+#sirius_summary = f"data/paired_spectra/{dataset_name}/sirius_outputs/summary_statistics/summary_df.tsv"
+
+dataset_name = "mills"
 labels_file = f"data/paired_spectra/{dataset_name}/labels.tsv"
 labels_file_out = f"data/paired_spectra/{dataset_name}/labels_putative.tsv"
 labels_file_hplus_out = f"data/paired_spectra/{dataset_name}/labels_putative_h_plus.tsv"

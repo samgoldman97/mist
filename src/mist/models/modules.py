@@ -54,6 +54,7 @@ class FormulaTransformer(nn.Module):
         num_heads: int = 8,
         output_size=2048,
         recycle_form_encoder: bool = False,
+        inten_transform: str = "float", 
         **kwargs
     ):
         """__init__.
@@ -81,9 +82,12 @@ class FormulaTransformer(nn.Module):
         self.output_size = output_size
         self.dropout = nn.Dropout(spectra_dropout)
         self.recycle_form_encoder = recycle_form_encoder
+        self.inten_transform = inten_transform
 
         self.num_types = featurizers.PeakFormula.num_types
         self.cls_type = featurizers.PeakFormula.cls_type
+        self.num_inten_bins = featurizers.PeakFormula.num_inten_bins
+
         self.additive_attn = additive_attn
         self.pairwise_featurization = pairwise_featurization
 
@@ -188,11 +192,18 @@ class FormulaTransformer(nn.Module):
         # Step 2: Embed root and concatenate intensities
         # B x P x H
         # Add in intensities
-        inten_tensor = batch["intens"][:, :, None]
+        intens_temp = batch["intens"]
+        if self.inten_transform == "cat":
+            inten_tensor = torch.eye(self.num_inten_bins+1, device=device)[intens_temp.long()]
+
+        else:
+            inten_tensor = intens_temp[:, :, None]
+
+        inten_tensor_shape = inten_tensor.shape[-1]
         batch_dim = inten_tensor.shape[0]
 
         # Add in intensities to peak tensor by concatenation
-        peak_tensor = peak_tensor[:, :, :-1]
+        peak_tensor = peak_tensor[:, :, : -inten_tensor_shape]
         peak_tensor = torch.cat([peak_tensor, inten_tensor], 2)
 
         # Step 3: Run transformer

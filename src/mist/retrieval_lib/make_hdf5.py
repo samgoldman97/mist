@@ -48,7 +48,6 @@ def make_retrieval_hdf5(dataset_name: str, labels_name: str,
     name_file = output_dir / f"{database_name}_with_{fp_names_str}_retrieval_db_names.p"
     hdf_file = output_dir / f"{database_name}_with_{fp_names_str}_retrieval_db.hdf5"
 
-
     data_df = pd.read_csv(data_dir / labels_name, sep="\t")
     key = "formula"
     formulae = list(set(data_df[key].values))

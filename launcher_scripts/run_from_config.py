@@ -281,13 +281,13 @@ def main(
         vis_devices = launcher_args.get("visible_devices", None)
         if vis_devices is None:
             raise ValueError()
-
+    
         sh_run_files = set()
         for str_num, cmd_str in enumerate(scripts_to_run):
             gpu_num = str_num % len(vis_devices)
             gpu = vis_devices[gpu_num]
             cmd_str_new = f"CUDA_VISIBLE_DEVICES={gpu} {cmd_str}"
-            output_name = f"{launcher_path.parent / launcher_path.stem}_python_{gpu}.sh"
+            output_name = f"{launcher_path.parent / launcher_path.stem}_python_{gpu}_{gpu_num}.sh"
 
             with open(output_name, "a") as fp:
                 fp.write(f"{cmd_str_new}\n")

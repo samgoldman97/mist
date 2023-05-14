@@ -171,7 +171,12 @@ def formula_to_dense_mass_norm(chem_formula: str) -> np.ndarray:
 
 
 def formula_mass(chem_formula: str) -> float:
-    """get formula mass"""
+    """get formula mass
+
+    Gives mol weight; 
+    TODO: Replace with exact mol wt here as well
+
+    """
     mass = 0
     for (chem_symbol, num) in re.findall(CHEM_FORMULA_SIZE, chem_formula):
         # Convert num to int
@@ -265,6 +270,8 @@ def form_from_smi(smi: str) -> str:
 
 def mass_from_smi(smi: str) -> float:
     """mass_from_smi.
+
+    Gives exact weight
 
     Args:
         smi (str): smi

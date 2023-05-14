@@ -37,6 +37,7 @@ def get_spec_featurizer(spec_features, **kwargs):
     return {
         "none": NoneFeaturizer,
         "binned": BinnedFeaturizer,
+        "mz_xformer": MZFeaturizer,
         "peakformula": PeakFormula,
         "peakformula_test": PeakFormulaTest,
     }[spec_features](**kwargs)
@@ -515,6 +516,108 @@ class BinnedFeaturizer(SpecFeaturizer):
         return {"spec": normed_spec, "name": spec.get_spec_name()}
 
 
+class MZFeaturizer(SpecFeaturizer):
+    """MZFeaturizer"""
+
+    def __init__(
+        self,
+        cleaned_peaks: bool = False,
+        upper_limit: int = 1500,
+        max_peaks: int = 50,
+        **kwargs,
+    ):
+        """__init__"""
+        super().__init__(**kwargs)
+
+        self.cleaned_peaks = cleaned_peaks
+        self.sirius_folder = Path(
+            data_utils.paired_get_sirius_folder(self.dataset_name)
+        )
+        self.max_peaks = max_peaks
+
+        if self.cleaned_peaks:
+            peak_file_summary = data_utils.paired_get_sirius_summary(self.dataset_name)
+            summary_df = pd.read_csv(peak_file_summary, sep="\t", index_col=0)
+            self.spec_name_to_file = dict(summary_df[["spec_name", "spec_file"]].values)
+            self.spec_name_to_file = {
+                k: Path(v).resolve() for k, v in self.spec_name_to_file.items()
+            }
+        self.upper_limit = upper_limit
+
+    @staticmethod
+    def collate_fn(input_list: List[dict]) -> Dict:
+        """collate_fn.
+
+        Input list of dataset outputs
+
+        Args:
+            input_list (List[Spectra]): Input list containing spectra to be
+                collated
+        Return:
+            Dictionary containing batched results and list of how many channels are
+            in each tensor
+        """
+        # Determines the number of channels
+        names = [j["name"] for j in input_list]
+        input_list = [torch.from_numpy(j["spec"]).float() for j in input_list]
+
+        # Define tensor of input lens
+        input_lens = torch.tensor([len(spectra) for spectra in input_list])
+
+        # Pad the input list using torch function
+        input_list_padded = torch.nn.utils.rnn.pad_sequence(
+            input_list, batch_first=True, padding_value=0
+        )
+
+        return_dict = {
+            "spectra": input_list_padded,
+            "input_lens": input_lens,
+            "names": names,
+        }
+        return return_dict
+
+    def convert_spectra_to_mz(self, spec, **kwargs) -> np.ndarray:
+        """Converts the spectra to a normalized ar
+
+        Args:
+            spec
+
+        Returns:
+            np.ndarray of shape where each channel has
+        """
+        if self.cleaned_peaks:
+            spec_name = spec.get_spec_name()
+            cleaned_tsv = Path(self.spec_name_to_file.get(spec_name))
+            if cleaned_tsv is not None and cleaned_tsv.exists():
+                _, spectra_ar = zip(*utils.parse_tsv_spectra(cleaned_tsv))
+            else:
+                logging.info(f"Skipping cleaned spec for {spec_name}")
+            merged = spectra_ar
+        else:
+            spectra_ar = spec.get_spec()
+
+            merged = utils.merge_norm_spectra(spectra_ar)
+
+        # Sort the merged peaks by intensity ([:, 1]) and limit to self.maxpeaks
+        merged = merged[merged[:, 1].argsort()[::-1][: self.max_peaks]]
+
+        parentmass = spec.parentmass
+        # Make sure MS1 is on top with intensity 2
+        merged = np.vstack([[parentmass, 2], merged])
+        return merged
+
+    def _featurize(self, spec: data.Spectra, **kwargs) -> Dict:
+        """featurize.
+
+        Args:
+            spec (Spectra)
+
+        """
+        # return binned spectra
+        normed_spec = self.convert_spectra_to_mz(spec, **kwargs)
+        return {"spec": normed_spec, "name": spec.get_spec_name()}
+
+
 class PeakFormula(SpecFeaturizer):
     """PeakFormula."""
 
@@ -537,6 +640,7 @@ class PeakFormula(SpecFeaturizer):
         magma_aux_loss: bool = False,
         forward_aug_folder: str = None,
         max_peaks: int = None,
+        inten_transform: str = "float",
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -551,6 +655,7 @@ class PeakFormula(SpecFeaturizer):
         self.magma_aux_loss = magma_aux_loss
         self.forward_aug_folder = forward_aug_folder
         self.max_peaks = max_peaks
+        self.inten_transform = inten_transform
 
         # Get sirius folder
         self.sirius_folder = Path(
@@ -826,7 +931,20 @@ class PeakFormula(SpecFeaturizer):
         form_vec = np.vstack(form_vec) / utils.NORM_VEC[None, :]
         mz_dict = dict(zip(mz_vec, form_vec))
 
+        # Inten transforms
         inten_vec = np.array(inten_vec)
+        if self.inten_transform == "float":
+            pass
+        elif self.inten_transform == "zero": 
+            inten_vec = np.zeros_like(inten_vec)
+        elif self.inten_transform == "log":
+            inten_vec = np.log(inten_vec + 1e-5)
+        elif self.inten_transform == "cat":
+            bins = np.linspace(0, 1, self.num_inten_bins)
+            # Digitize inten vec
+            inten_vec = np.digitize(inten_vec, bins)
+        else:
+            raise NotImplementedError()
 
         ## Add in magma supervision!
         fingerprints = []
