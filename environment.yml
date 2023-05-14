@@ -1,0 +1,22 @@
+name: ms-gen
+channels:
+- pytorch
+- conda-forge
+dependencies:
+- python=3.8.*
+- matplotlib=3.4.*
+- rdkit=2021.03.*
+#- cudatoolkit=11.1 # may need to comment if cpu only
+- pytorch-lightning=1.6.* #1.7
+- pytorch::torchvision
+- torchmetrics=0.4.*
+- einops
+- pip=21.2.*
+- ipykernel=6.0.*
+- pytorch::pytorch=1.9.* #- dgl=0.7.*
+- nb_conda_kernels=2.3.*
+- seaborn=0.11.*
+- h5py
+- ray-tune
+- umap-learn
+- optuna
