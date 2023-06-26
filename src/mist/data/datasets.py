@@ -25,6 +25,7 @@ def get_paired_spectra(
     pred_formula: bool = False,
     allow_none_smiles: bool = False,
     labels_name: str = "labels.tsv",
+    base_folder = "data/paired_spectra",
     **kwargs,
 ) -> Tuple[List[Spectra], List[Mol]]:
     """get_paired_spectra.
@@ -45,7 +46,7 @@ def get_paired_spectra(
     """
 
     # First get labels
-    labels = data_utils.paired_get_labels(dataset_name, labels_name=labels_name)
+    labels = data_utils.paired_get_labels(dataset_name, labels_name=labels_name, base_folder=base_folder)
     compound_id_file = pd.read_csv(labels, sep="\t")
 
     if pred_formula:
@@ -65,7 +66,7 @@ def get_paired_spectra(
 
     # Note, loading has moved to the dataloader itself
     logging.info(f"Loading paired specs")
-    spec_folder = data_utils.paired_get_spec_folder(dataset_name)
+    spec_folder = data_utils.paired_get_spec_folder(dataset_name, base_folder=base_folder)
     spec_folder = Path(spec_folder)
 
     # Resolve for full path

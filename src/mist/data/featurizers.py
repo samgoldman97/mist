@@ -434,6 +434,7 @@ class BinnedFeaturizer(SpecFeaturizer):
         cleaned_peaks: bool = False,
         upper_limit: int = 1500,
         num_bins: int = 2000,
+        base_folder: str = "data/paired_spectra",
         **kwargs,
     ):
         """__init__"""
@@ -441,11 +442,11 @@ class BinnedFeaturizer(SpecFeaturizer):
 
         self.cleaned_peaks = cleaned_peaks
         self.sirius_folder = Path(
-            data_utils.paired_get_sirius_folder(self.dataset_name)
+            data_utils.paired_get_sirius_folder(self.dataset_name, base_folder=base_folder)
         )
 
         if self.cleaned_peaks:
-            peak_file_summary = data_utils.paired_get_sirius_summary(self.dataset_name)
+            peak_file_summary = data_utils.paired_get_sirius_summary(self.dataset_name, base_folder=base_folder)
             summary_df = pd.read_csv(peak_file_summary, sep="\t", index_col=0)
             self.spec_name_to_file = dict(summary_df[["spec_name", "spec_file"]].values)
             self.spec_name_to_file = {
@@ -524,6 +525,7 @@ class MZFeaturizer(SpecFeaturizer):
         cleaned_peaks: bool = False,
         upper_limit: int = 1500,
         max_peaks: int = 50,
+        base_folder: str = "data/paired_spectra",
         **kwargs,
     ):
         """__init__"""
@@ -531,12 +533,12 @@ class MZFeaturizer(SpecFeaturizer):
 
         self.cleaned_peaks = cleaned_peaks
         self.sirius_folder = Path(
-            data_utils.paired_get_sirius_folder(self.dataset_name)
+            data_utils.paired_get_sirius_folder(self.dataset_name, base_folder=base_folder)
         )
         self.max_peaks = max_peaks
 
         if self.cleaned_peaks:
-            peak_file_summary = data_utils.paired_get_sirius_summary(self.dataset_name)
+            peak_file_summary = data_utils.paired_get_sirius_summary(self.dataset_name, base_folder=base_folder)
             summary_df = pd.read_csv(peak_file_summary, sep="\t", index_col=0)
             self.spec_name_to_file = dict(summary_df[["spec_name", "spec_file"]].values)
             self.spec_name_to_file = {
@@ -641,6 +643,7 @@ class PeakFormula(SpecFeaturizer):
         forward_aug_folder: str = None,
         max_peaks: int = None,
         inten_transform: str = "float",
+        base_folder: str = "data/paired_spectra",
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -659,9 +662,9 @@ class PeakFormula(SpecFeaturizer):
 
         # Get sirius folder
         self.sirius_folder = Path(
-            data_utils.paired_get_sirius_folder(self.dataset_name)
+            data_utils.paired_get_sirius_folder(self.dataset_name, base_folder=base_folder)
         )
-        peak_file_summary = data_utils.paired_get_sirius_summary(self.dataset_name)
+        peak_file_summary = data_utils.paired_get_sirius_summary(self.dataset_name, base_folder=base_folder)
         summary_df = pd.read_csv(peak_file_summary, sep="\t", index_col=0)
         self.spec_name_to_tree_file = dict(
             summary_df[["spec_name", "tree_file"]].values
@@ -680,7 +683,7 @@ class PeakFormula(SpecFeaturizer):
 
         if self.magma_aux_loss:
             # Load smile-fingerprint dict
-            magma_folder = data_utils.paired_get_magma_folder(self.dataset_name)
+            magma_folder = data_utils.paired_get_magma_folder(self.dataset_name, base_folder=base_folder)
             index_file = Path(magma_folder) / "magma_smiles_fp_index.p"
             fp_file = Path(magma_folder) / "magma_smiles_fp.hdf5"
             mapping_file = Path(magma_folder) / "magma_file_mapping_df.csv"

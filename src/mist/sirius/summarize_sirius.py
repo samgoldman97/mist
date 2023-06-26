@@ -38,7 +38,7 @@ def extract_top_specs(labels_file, sirius_folder):
         pd.DataFrame containing outputs
     """
     ## Map ID
-    df = pd.read_csv(labels_file, sep="\t")
+    df = pd.read_csv(labels_file, sep="\t") if labels_file is not None else {}
     if "formula" in df.keys():
         id_to_formula = dict(df[["spec", "formula"]].values)
     else:
@@ -72,6 +72,20 @@ def extract_top_specs(labels_file, sirius_folder):
         # Find all tree sand spectra
         spectra_subdir = directory_full / "spectra"
         tree_subdir = directory_full / "trees"
+        info_file = directory_full / "compound.info"
+        # Info file has a set of k,v pairs separated by a space. Parse these and put into a dict
+        with open(info_file, "r") as fp:
+            lines = fp.readlines()
+            out_dict = {}
+            for line in lines:
+                line = line.strip()
+                if "\t" in line and len(line) > 1:
+                    k, v = line.split("\t", 1)
+                    out_dict[k] = v
+            parentmass = out_dict["ionMass"]
+            parentmass = float(parentmass)
+
+
 
         adduct_escaped = escape_adduct(adduct)
         file_extension = f"{precursor_formula}_{adduct_escaped}"
@@ -85,6 +99,7 @@ def extract_top_specs(labels_file, sirius_folder):
             "adduct": adduct, 
             "pred_formula": precursor_formula,
             "true_formula": true_formula,
+            "parentmass": parentmass
         }
         return new_entry
 
@@ -146,6 +161,32 @@ def main(labels_file: str, sirius_folder: str, ):
 
     # Create summary statistics
     process_statistics(spec_df, out_dir)
+
+def build_new_labels(sirius_summary: str, dataset_name=""):
+    """build_new_labels."""
+
+    summary = pd.read_csv(sirius_summary, sep="\t")
+    name_to_pred_form = dict(summary[["spec_name", "pred_formula"]].values)
+    name_to_pred_adduct = dict(summary[["spec_name", "adduct"]].values)
+    name_to_parentmass = dict(summary[["spec_name", "parentmass"]].values)
+
+
+    new_df = []
+    for k in name_to_pred_adduct:
+        new_entry = {}
+        new_entry['spec'] = k
+        new_entry['formula'] = name_to_pred_form[k]
+        new_entry['ionization'] = name_to_pred_adduct[k]
+        new_entry['dataset'] = dataset_name
+        new_entry['compound'] = k
+        new_entry['parentmass'] =  name_to_parentmass[k]
+        new_df.append(new_entry)
+
+    labels = pd.DataFrame(new_df)
+    has_formula = labels[labels["ionization"] != "[M+?]+"]
+    has_formula = has_formula.reset_index(drop=True)
+    return has_formula
+
 
 
 if __name__ == "__main__":

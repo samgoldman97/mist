@@ -71,8 +71,7 @@ source quickstart/05_run_models.sh
 
 Output predictions can be found in `quickstart/model_predictions` and are included by default with the repository. 
 
-Note that permanent links to pretrained models can be downloaded from 
-
+We provide a notebook `notebooks/mist_demo.ipynb` that shows these calls programmatically, rather than in the command line.
 
 ## Data <a name="data"></a>
 
@@ -105,9 +104,9 @@ Because these molecules were provided by the CANOPUS authors as InchiKeys, some
 work is required to map them back to smiles. A record of this is provided in
 `data_processing/forward`.
 
-## Training models <a name="training"></a>
+### Training set download
 
-For those interested in recreating our pipeline, we provide details to train a minimal model for comparison on the canopus\_train dataset. The minimal dataset as we processed must first be downloaded (~3.3G): 
+For those interested in recreating our pipeline for comparison on the canopus\_train dataset, the minimal dataset as we processed must first be downloaded (~3.3G): 
 
 ```
 cd data/paired_spectra/
@@ -117,6 +116,11 @@ tar -xvf canopus_train_public.tar
 rm canopus_train_public.tar
 cd ../../
 ```
+
+
+## Training models <a name="training"></a>
+
+We provide details below to train a minimal model for comparison on the canopus\_train dataset (download instructions described in [Data](#data)).
 
 ### MIST fingerprint model
 

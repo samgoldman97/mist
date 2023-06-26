@@ -25,7 +25,9 @@ CHUNKSIZE = 1024
 
 def make_retrieval_hdf5(dataset_name: str, labels_name: str,
                         form_to_smi: dict, database_name="inthmdb",
-                        fp_names: list = ["morgan4096"], debug: bool = False):
+                        fp_names: list = ["morgan4096"], debug: bool = False,
+                        data_dir = "data/paired_spectra"
+                        ):
     """ make_retrieval_hdf5. 
 
     Args:
@@ -37,7 +39,8 @@ def make_retrieval_hdf5(dataset_name: str, labels_name: str,
         debug (bool): debug flag
     """
 
-    data_dir = Path(f"data/paired_spectra/{dataset_name}")
+    data_dir = Path(data_dir)
+    data_dir = data_dir / f"{dataset_name}"
     if not data_dir.exists():
         raise ValueError()
 
