@@ -1,0 +1,49 @@
+launcher_args: {experiment_name: 2022_09_28_forward_canopus_hyperot,
+  script_name: "run_scripts/hyperopt_forward_ffn.py",
+  slurm_script: launcher_scripts/generic_slurm.sh, 
+  launch_method: local,
+  visible_devices: [0, 1, 2]
+}
+universal_args:
+  _slurm_args:
+  - {_num_gpu: 1, cpus-per-task: 7, job-name: forward_train, mem-per-cpu: 8G, time: '1-18:00:00', }
+  debug: [false] 
+  gpu: [true] 
+  scheduler: [true]
+  learning-rate: [7.0e-4]
+  seed: [42]
+  num-workers: [8] 
+  batch-size: [64]
+  max-epochs: [300]
+  dataset-name: [canopus_train] 
+  split-name: [canopus_hplus_100.csv]
+  num-bins: [15000] 
+  upper-limit: [1500]
+  layers: [3]
+  dropout: [0.1]
+  hidden-size: [200]
+  use-reverse: [true]
+
+iterative_args:
+  - use-reverse: [true]
+    scheduler: [true]
+    lr-decay-rate: [0.99]
+    learning-rate: [1.0e-3]
+    dropout: [0.1]
+    layers: [2]
+    hidden-size: [256]
+    overfit-train: [false]
+    loss-fn: ["bce"]
+    fp-type: [morgan4096_2]
+    growing: [iterative]
+    growing-weight: [0.005]
+    growing-scheme: [interleave]
+    growing-layers: [4]
+
+    # Hyperopt args
+    cpus-per-trial: [8]
+    gpus-per-trial: [1]
+    num-h-samples: [100]
+    grace-period: [5]
+    max-concurrent: [10]
+    tune-checkpoint: [results/2022_09_28_forward_canopus_hyperot/2022_09_28-2155_315178_8782491668da74bd5082438dfcad59ee/score_function_2022-09-28_21-55-39/]

@@ -1,0 +1,42 @@
+launcher_args: {experiment_name: 2022_10_16_csi_forward_best,
+  script_name: "run_scripts/train_forward_ffn.py",
+  slurm_script: launcher_scripts/generic_slurm.sh, 
+  launch_method: slurm,
+  visible_devices: [3]
+}
+universal_args:
+  _slurm_args:
+  - {_num_gpu: 1, cpus-per-task: 7, job-name: forward_train, mem-per-cpu: 8G, nodelist: 'node[1236]', 
+    time: '1-18:00:00'}
+  debug: [false]
+  gpu: [true]
+  scheduler: [true]
+  learning-rate: [7.0e-4]
+  seed: [42]
+  num-workers: [20]
+  batch-size: [64]
+  max-epochs: [300]
+  dataset-name: [csi2022]
+  split-name: [csi_split_0.txt, csi_split_1.txt, csi_split_2.txt]
+  num-bins: [15000] 
+  upper-limit: [1500]
+  layers: [3]
+  dropout: [0.1]
+  hidden-size: [200]
+  use-reverse: [true]
+
+iterative_args:
+  - use-reverse: [true]
+    scheduler: [false]
+    learning-rate: [0.0008]
+    lr-decay-rate: [0.99]
+    dropout: [0.2]
+    layers: [2]
+    hidden-size: [512]
+    overfit-train: [false]
+    loss-fn: ["bce"]
+    fp-type: [csi]
+    growing: [iterative]
+    growing-weight: [0.003]
+    growing-scheme: [interleave]
+    growing-layers: [3]

@@ -1,0 +1,109 @@
+launcher_args: {experiment_name: 2022_11_01_canopus_contrastive_model_ablations,
+  script_name: run_scripts/train_contrastive.py, 
+  slurm_script: launcher_scripts/generic_slurm.sh, 
+  visible_devices: [0, 1, 2, 3], 
+  launch_method: local_parallel, 
+}
+universal_args:
+  _slurm_args:
+  - {_num_gpu: 1, cpus-per-task: 8, job-name: ms-train, mem-per-cpu: 12G, time: '1-18:00:00'} 
+
+  debug: [false]
+  seed: [1]
+  dataset-name: [canopus_train]
+  compound-lib: [intpubchem]
+  splitter-name: [preset]
+  split-sizes:
+  - [0.95, 0.05, 0]
+
+  # Data aug
+  augment-data: [true]
+  augment-prob: [0.5]
+  remove-prob: [0.5]
+  remove-weights: [exp]
+  inten-prob: [0.1]
+  add-forward-specs: [true]
+
+  # Use forward augmentations
+  # forward-aug-folder: [data/paired_spectra/csi2022/csi_spec_preds_fold_0/]
+  frac-orig: [0.2]
+  dist-name: [cosine] 
+
+  # Contrastive loss
+  contrastive-loss: [nce]
+  contrastive-decoy-pool: [mean]
+  contrastive-latent: [h0]
+  contrastive-weight: [0.6]
+  contrastive-scale: [16] 
+  contrastive-bias: [0.0] 
+  num-decoys: [64]
+  max-db-decoys: [256]
+  decoy-norm-exp: [4]
+  contrastive-latent-size: [null]
+  negative-strategy: [hardisomer_tani_pickled]
+
+
+  learning-rate: [0.00057]
+  weight-decay: [1.0e-07]
+  min-lr: [5e-06] 
+  scheduler: [True]
+  lr-decay-time: [10000] 
+  lr-decay-frac: [0.7138]
+  patience: [10]
+  max-epochs: [500] 
+  gpus: [1]
+  batch-size: [32]
+  num-workers: [12]
+  persistent-workers: [false]
+  cache-featurizers: [true]
+
+iterative_args:
+  - ckpt-file: ["results/2022_11_01_canopus_model_ablations/full_model_0/Fold_100_0/best.ckpt"]
+    persistent-workers: [false]
+    split-file: [data/paired_spectra/canopus_train/splits/canopus_hplus_100_0.csv]
+    forward-aug-folder: [data/paired_spectra/canopus_train/morgan4096_spec_preds_fold_100_0]
+
+  - ckpt-file: ["results/2022_11_01_canopus_model_ablations/full_model_1/Fold_100_1/best.ckpt"]
+    persistent-workers: [false]
+    split-file: [data/paired_spectra/canopus_train/splits/canopus_hplus_100_1.csv]
+    forward-aug-folder: [data/paired_spectra/canopus_train/morgan4096_spec_preds_fold_100_1]
+
+  - ckpt-file: ["results/2022_11_01_canopus_model_ablations/full_model_2/Fold_100_2/best.ckpt"]
+    persistent-workers: [false]
+    split-file: [data/paired_spectra/canopus_train/splits/canopus_hplus_100_2.csv]
+    forward-aug-folder: [data/paired_spectra/canopus_train/morgan4096_spec_preds_fold_100_2]
+
+  ##  No pretraining
+  - ckpt-file: ["results/2022_11_01_canopus_model_ablations/full_model_0/Fold_100_0/best.ckpt"]
+    persistent-workers: [false]
+    split-file: [data/paired_spectra/canopus_train/splits/canopus_hplus_100_0.csv]
+    forward-aug-folder: [data/paired_spectra/canopus_train/morgan4096_spec_preds_fold_100_0]
+    no-pretrain-load: [true]
+
+  - ckpt-file: ["results/2022_11_01_canopus_model_ablations/full_model_1/Fold_100_1/best.ckpt"]
+    persistent-workers: [false]
+    split-file: [data/paired_spectra/canopus_train/splits/canopus_hplus_100_1.csv]
+    forward-aug-folder: [data/paired_spectra/canopus_train/morgan4096_spec_preds_fold_100_1]
+    no-pretrain-load: [true]
+
+  - ckpt-file: ["results/2022_11_01_canopus_model_ablations/full_model_2/Fold_100_2/best.ckpt"]
+    persistent-workers: [false]
+    split-file: [data/paired_spectra/canopus_train/splits/canopus_hplus_100_2.csv]
+    forward-aug-folder: [data/paired_spectra/canopus_train/morgan4096_spec_preds_fold_100_2]
+    no-pretrain-load: [true]
+
+  # FFN 
+  - ckpt-file: ["results/2022_11_01_canopus_model_ablations/ffn_0/Fold_100_0/best.ckpt"]
+    persistent-workers: [false]
+    split-file: [data/paired_spectra/canopus_train/splits/canopus_hplus_100_0.csv]
+    add-forward-specs: [false]
+
+  - ckpt-file: ["results/2022_11_01_canopus_model_ablations/ffn_1/Fold_100_1/best.ckpt"]
+    persistent-workers: [false]
+    split-file: [data/paired_spectra/canopus_train/splits/canopus_hplus_100_1.csv]
+    add-forward-specs: [false]
+
+  - ckpt-file: ["results/2022_11_01_canopus_model_ablations/ffn_2/Fold_100_2/best.ckpt"]
+    persistent-workers: [false]
+    split-file: [data/paired_spectra/canopus_train/splits/canopus_hplus_100_2.csv]
+    add-forward-specs: [false]
