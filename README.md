@@ -156,7 +156,9 @@ The version of pubchem we use can be downloaded and moved into the appropriate d
 mkdir data/raw/
 mkdir data/raw/pubchem
 cd data/raw/pubchem
-wget https://www.dropbox.com/s/fq3mr3mauanqthb/cid_smiles.txt
+#wget https://www.dropbox.com/s/fq3mr3mauanqthb/cid_smiles.txt
+wget https://zenodo.org/record/8084088/files/cid_smiles.txt
+
 ```
 
 After downloading pubchem, a new retrieval database can be generated using the following commands, which will build hdf files taking >20G of space for retrieval and contrastive learning:
@@ -195,7 +197,7 @@ To compare models against ours in the future, we recommend using the splits belo
 2. `data/paired_spectra/canopus_train_public/splits/canopus_hplus_100_1.csv`  
 3. `data/paired_spectra/canopus_train_public/splits/canopus_hplus_100_2.csv`  
 
-For retrieval comparisons, all retrieval accuracies are reported using PubChem and the downloaded smiles [here](https://www.dropbox.com/s/fq3mr3mauanqthb/cid_smiles.txt).
+For retrieval comparisons, all retrieval accuracies are reported using PubChem and the downloaded smiles [here](https://zenodo.org/record/8084088/files/cid_smiles.txt).
 
 To see the exact call signatures used to train our models, we have provided yaml config files in `configs/paper_experiments`, which can be directly converted into experiments using `python launcher_scripts/run_from_config.py [config.yaml]`. We suggest switching "launch\_method" to "local" in the config if intending to re-run from config files. 
 
@@ -204,12 +206,13 @@ While not meant to be re-run directly, we also folders titled `run_scripts/fig_2
 
 ### Mills et al. prospective analysis
 
-To reanalyze data from Mills et al., an ensemble of MIST fingerprint and contrastive models are trained and used to embed & annotate new spectra. The data from this analysis can be downloaded [here](https://www.dropbox.com/s/s35jmdixpt6dvlr/mills.tar):
+To reanalyze data from Mills et al., an ensemble of MIST fingerprint and contrastive models are trained and used to embed & annotate new spectra. The data from this analysis can be downloaded [here](https://zenodo.org/record/8084088/files/mills.tar):
 
 ```
 mkdir data/raw
 cd data/raw/
-wget https://www.dropbox.com/s/s35jmdixpt6dvlr/mills.tar
+#wget https://www.dropbox.com/s/s35jmdixpt6dvlr/mills.tar
+wget https://zenodo.org/record/8084088/files/mills.tar
 tar -xvf mills.tar
 rm mills.tar
 ```
@@ -239,4 +242,4 @@ MIST also builds on a number of other projects, ideas, and software including SI
 6. Mills, Robert H., et al. "Multi-omics analyses of the ulcerative colitis gut microbiome link Bacteroides vulgatus proteases with disease severity." Nature Microbiology 7.2 (2022): 262-276.   
 7. Kim, Hyun Woo, et al. "NPClassifier: a deep neural network-based structural classification tool for natural products." Journal of natural products 84.11 (2021): 2795-2807.   
 8. Kim, Sunghwan, et al. "PubChem 2019 update: improved access to chemical data." Nucleic acids research 47.D1 (2019): D1102-D1109.    
-9. Wishart, David S., et al. "HMDB 4.0: the human metabolome database for 2018." Nucleic acids research 46.D1 (2018): D608-D617.   
+9. Wishart, David S., et al. "HMDB 5.0: the human metabolome database for 2022." Nucleic Acids Research 50.D1 (2022): D622-D631.
