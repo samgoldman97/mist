@@ -8,7 +8,8 @@ This repository provides implementations and code examples for [_Metabolite Infe
 _Samuel Goldman, Jeremy Wohlwend, Martin Strazar, Guy Haroush, Ramnik J. Xavier, Connor W. Coley_
 
 ![Model graphic](MIST_graphic.png)
-#
+
+**We are actively working on an updated MIST codebase to accept multiple adduct types, simplify code, and use an internal subformula labeling scheme to reduce reliance on SIRIUS. In the meantime, see [MIST-CF](https://github.com/samgoldman97/mist-cf) for a cleaner implemntation of the formula transformer.**
 
 ## Table of Contents
 
