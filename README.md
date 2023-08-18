@@ -1,7 +1,6 @@
 # 🌫️ MIST: Metabolite Inference with Spectrum Transformers
 
 [![DOI](https://zenodo.org/badge/564051299.svg)](https://zenodo.org/badge/latestdoi/564051299)  
-Version v1.0.0 10.5281/zenodo.7897299	
 
 This repository provides implementations and code examples for [_Metabolite Inference with Spectrum Transformers_ (MIST)](https://www.biorxiv.org/content/10.1101/2022.12.30.522318v1). MIST models can be used to predict molecular fingerprints from tandem mass spectrometry data and, when trained in a contratsive learning framework, enable embedding and structure annotation by database lookup. Rather than directly embed binned spectra, MIST applies a transformer architecture to directly encode and learn to represent collections of chemical formula. 
 
@@ -111,7 +110,6 @@ For those interested in recreating our pipeline for comparison on the canopus\_t
 
 ```
 cd data/paired_spectra/
-#wget https://www.dropbox.com/s/8jn6sz0o3srmtev/canopus_train_public.tar
 wget https://zenodo.org/record/7897324/files/canopus_train_public.tar
 tar -xvf canopus_train_public.tar
 rm canopus_train_public.tar
@@ -121,7 +119,7 @@ cd ../../
 
 ## Training models <a name="training"></a>
 
-We provide details below to train a minimal model for comparison on the canopus\_train dataset (download instructions described in [Data](#data)).
+We provide details below to train a minimal model for comparison on the canopus\_train dataset (download instructions described in [Data](#data)). **The config files specify the exact parameters used in experiments as reported in the paper.**
 
 ### MIST fingerprint model
 
@@ -212,7 +210,6 @@ To reanalyze data from Mills et al., an ensemble of MIST fingerprint and contras
 ```
 mkdir data/raw
 cd data/raw/
-#wget https://www.dropbox.com/s/s35jmdixpt6dvlr/mills.tar
 wget https://zenodo.org/record/8084088/files/mills.tar
 tar -xvf mills.tar
 rm mills.tar
