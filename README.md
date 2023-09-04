@@ -47,9 +47,11 @@ After creating a python enviornment, pretrained models can be used to:
 To showcase these capabilities, we include an MGF file, `quickstart/quickstart.mgf` (a sample from the Mills et al. data), along with a set of sample smiles `quickstart/lookup_smiles.txt`. 
 
 ```
+
 conda activate ms-gen
 . quickstart/00_download_models.sh
-. quickstart/01_run_models.py
+. quickstart/01_run_models.sh
+
 ```
 
 Output predictions can be found in `quickstart/model_predictions` and are
@@ -115,9 +117,9 @@ After downloading the canopus\_train dataset, the following two commands demonst
 ```
 
 CUDA_VISIBLE_DEVICES=0 python src/mist/train_mist.py \
-    --cache-featurizers \ 
+    --cache-featurizers \
     --labels-file 'data/paired_spectra/canopus_train/labels.tsv' \
-    --subform-folder 'data/paired_spectra/canopus_train/subformulae/subformulae_default/' \ 
+    --subform-folder 'data/paired_spectra/canopus_train/subformulae/subformulae_default/' \
     --spec-folder 'data/paired_spectra/canopus_train/spec_files/' \
     --magma-folder 'data/paired_spectra/canopus_train/magma_outputs/magma_tsv/' \
     --fp-names morgan4096 \
@@ -140,8 +142,8 @@ CUDA_VISIBLE_DEVICES=0 python src/mist/train_mist.py \
     --magma-loss-lambda 8 \
     --magma-modulo 512 \
     --split-file 'data/paired_spectra/canopus_train/splits/canopus_hplus_100_0.tsv' \
-    --forward-labels 'data/paired_spectra/canopus_train/aug_iceberg_canopus_train/biomols_filtered_smiles_canopus_train_labels.tsv' \ 
-    --forward-aug-folder 'data/paired_spectra/canopus_train/aug_iceberg_canopus_train/canopus_hplus_100_0/subforms/' \ 
+    --forward-labels 'data/paired_spectra/canopus_train/aug_iceberg_canopus_train/biomols_filtered_smiles_canopus_train_labels.tsv' \
+    --forward-aug-folder 'data/paired_spectra/canopus_train/aug_iceberg_canopus_train/canopus_hplus_100_0/subforms/' \
     --frac-orig 0.6 \
     --form-embedder 'pos-cos' \
     --no-diffs \
@@ -156,8 +158,7 @@ CUDA_VISIBLE_DEVICES=0 python src/mist/train_mist.py \
 CUDA_VISIBLE_DEVICES=0 python src/mist/train_contrastive.py \
     --seed 1 \
     --labels-file 'data/paired_spectra/canopus_train/labels.tsv' \
-    --subform-folder
-    'data/paired_spectra/canopus_train/subformulae/subformulae_default/' \
+    --subform-folder 'data/paired_spectra/canopus_train/subformulae/subformulae_default/' \
     --spec-folder 'data/paired_spectra/canopus_train/spec_files/' \
     --magma-folder 'data/paired_spectra/canopus_train/magma_outputs/' \
     --hdf-file 'data/paired_spectra/canopus_train/retrieval_hdf/intpubchem_with_morgan4096_retrieval_db_contrast.h5' \

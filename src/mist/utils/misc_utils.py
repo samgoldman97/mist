@@ -96,7 +96,7 @@ def setup_logger(save_dir, log_name="output.log", debug=False):
     """Create output directory"""
 
     save_dir = Path(save_dir)
-    save_dir.mkdir(exist_ok=True)
+    save_dir.mkdir(exist_ok=True, parents=True)
     log_file = save_dir / log_name
 
     if debug is not False:

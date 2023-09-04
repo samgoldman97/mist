@@ -6,10 +6,7 @@ dependencies:
 - python=3.8.*
 - matplotlib=3.4.*
 - rdkit=2021.03.*
-- cudatoolkit=11.1 # may need to modify if cpu only
 - pytorch-lightning=1.6.* #1.7
-- pytorch::torchvision
-- torchmetrics=0.4.*
 - einops
 - pip=21.2.*
 - ipykernel=6.0.*
@@ -20,3 +17,6 @@ dependencies:
 - ray-tune
 - umap-learn
 - optuna
+- cudatoolkit=11.1 # may need to modify if cpu only
+  #- pytorch::torchvision
+  #- torchmetrics
