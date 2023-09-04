@@ -1,0 +1,65 @@
+launcher_args: {experiment_name: csi_contrastive_mist,
+  script_name: src/mist/train_contrastive.py, 
+  slurm_script: launcher_scripts/generic_slurm.sh, 
+  visible_devices: [2], 
+  launch_method: local, 
+}
+universal_args:
+  _slurm_args:
+  - {_num_gpu: 1, cpus-per-task: 8, job-name: ms-train, mem-per-cpu: 12G, time: '1-18:00:00'}
+  debug: [false]
+  seed: [1]
+
+  labels-file: [data/paired_spectra/csi2022/labels.tsv]
+  subform-folder: [data/paired_spectra/csi2022/subformulae/subformulae_default/]
+  spec-folder: [data/paired_spectra/csi2022/spec_files/]
+  magma-folder: [data/paired_spectra/csi2022/magma_outputs/]
+  fp-file: [fingerprints/precomputed_fp/cache_csi_csi2022.h5]
+  hdf-file: [data/paired_spectra/csi2022/retrieval_hdf/pubchem_with_csi_retrieval_db_contrast.h5]
+
+  # Data aug
+  augment-data: [true]
+  augment-prob: [0.5]
+  remove-prob: [0.5]
+  remove-weights: [exp]
+  inten-prob: [0.1]
+
+  # Use forward augmentations
+  # forward-aug-folder: [data/paired_spectra/csi2022/csi_spec_preds_fold_0/]
+  dist-name: [cosine]
+
+  # Contrastive loss
+  contrastive-loss: [nce]
+  contrastive-decoy-pool: [mean]
+  contrastive-latent: [h0]
+  contrastive-weight: [0.6]
+  contrastive-scale: [16] 
+  contrastive-bias: [0.0] 
+  num-decoys: [64]
+  max-db-decoys: [256]
+  decoy-norm-exp: [4]
+  contrastive-latent-size: [null]
+  negative-strategy: [hardisomer_tani_pickled]
+
+  learning-rate: [6.0e-5]
+  weight-decay: [0]
+  scheduler: [True]
+  lr-decay-frac: [0.801]
+  patience: [10]
+  max-epochs: [500]
+  gpus: [1]
+  batch-size: [32]
+  num-workers: [8] # 8
+  persistent-workers: [false]
+  cache-featurizers: [true]
+
+iterative_args:
+  - ckpt-file: [
+    "results/csi_fp_mist/split_0/csi_split_0/best.ckpt"
+    ]
+    save-dir: [split_0]
+    split-file: [data/paired_spectra/csi2022/splits/csi_split_0.tsv]
+    # Use forward aug
+    forward-labels: [data/paired_spectra/csi2022/aug_iceberg_csi2022/biomols_filtered_smiles_csi2022_labels.tsv]
+    forward-aug-folder: [data/paired_spectra/csi2022/aug_iceberg_csi2022/csi_split_0/subforms/]
+    frac-orig: [0.5]

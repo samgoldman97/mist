@@ -1,0 +1,12 @@
+ray
+git+https://github.com/ray-project/ray_lightning#ray_lightning
+scikit-learn
+pathos
+hyperopt
+setuptools==59.5.0
+ray[air]
+CairoSVG
+# Only necessary if running baselines
+#spec2vec # Baseline
+#ms2deepscore # Baseline
+#matchms # Baseline

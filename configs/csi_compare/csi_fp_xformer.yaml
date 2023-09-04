@@ -1,0 +1,55 @@
+launcher_args: {experiment_name: csi_fp_xformer, 
+  script_name: src/mist/train_xformer.py,
+  slurm_script: launcher_scripts/generic_slurm.sh, 
+  visible_devices: [1],
+  launch_method: local
+}
+universal_args:
+  _slurm_args:
+  - {_num_gpu: 1, cpus-per-task: 6, job-name: ms-train, mem-per-cpu: 10G, time: '1-18:00:00'}
+
+  cache-featurizers: [true]
+
+  labels-file: [data/paired_spectra/csi2022/labels.tsv]
+  subform-folder: [data/paired_spectra/csi2022/subformulae/subformulae_default/]
+  spec-folder: [data/paired_spectra/csi2022/spec_files/]
+  fp-file: [fingerprints/precomputed_fp/cache_csi_csi2022.h5]
+
+  # Debug
+  debug: [false]
+  fp-names:
+  - - csi
+  num-workers: [10]
+  persistent-workers: [false]
+  seed: [1]
+
+  gpus: [1]
+
+  # Data augmentation
+  augment-data: [false]
+  batch-size: [128]
+
+  iterative-loss-weight: [0.5]
+  iterative-preds: [none]
+  learning-rate: [0.00026]
+  weight-decay: [0]
+
+  # Learning
+  max-epochs: [600]
+  scheduler: [false] 
+
+  # Model params
+  hidden-size: [256]
+  num-spec-layers: [4]
+  spectra-dropout: [0.3]
+  patience: [20]
+  loss-fn: [cosine] 
+  
+  forward-labels: [false]
+
+iterative_args:
+  - save-dir: [split_0]
+    split-file: [data/paired_spectra/csi2022/splits/csi_split_0.tsv]
+
+    # Reverted to original paper
+    embed-instrument: [false]

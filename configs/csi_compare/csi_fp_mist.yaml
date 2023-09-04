@@ -1,0 +1,77 @@
+launcher_args: {experiment_name: csi_fp_mist, 
+script_name: src/mist/train_mist.py,
+  slurm_script: launcher_scripts/generic_slurm.sh, 
+  visible_devices: [3],
+  launch_method: local
+}
+universal_args:
+  _slurm_args:
+  - {_num_gpu: 1, cpus-per-task: 6, job-name: ms-train, mem-per-cpu: 10G, time: '1-18:00:00'}
+
+  cache-featurizers: [true]
+
+  labels-file: [data/paired_spectra/csi2022/labels.tsv]
+  subform-folder: [data/paired_spectra/csi2022/subformulae/subformulae_default/]
+  spec-folder: [data/paired_spectra/csi2022/spec_files/]
+  fp-file: [fingerprints/precomputed_fp/cache_csi_csi2022.h5]
+  magma-folder: [data/paired_spectra/csi2022/magma_outputs/magma_tsv/]
+
+  # Debug
+  debug: [null]
+  fp-names:
+  - - csi
+  num-workers: [16]
+  persistent-workers: [false]
+  seed: [1]
+
+  gpus: [1]
+
+  # Data augmentation
+  augment-data: [true]
+  augment-prob: [0.5]
+  batch-size: [128]
+  inten-prob: [0.1]
+  remove-prob: [0.5]
+  remove-weights: [exp]
+
+  # No iterative preds for debug
+  iterative-preds: [growing]
+  iterative-loss-weight: [0.6]
+  learning-rate: [0.00026]
+  weight-decay: [1.0e-07]
+
+  # Learning
+  max-epochs: [600]
+  scheduler: [true] 
+  lr-decay-frac: [0.97]
+  loss-fn: [cosine]
+
+  # Model params
+  hidden-size: [256]
+  num-heads: [8]
+  pairwise-featurization: [true]
+  peak-attn-layers: [2]
+  refine-layers: [5] 
+  set-pooling: [cls]
+  spectra-dropout: [0.1] 
+  cls-type: [ms1]
+
+  # Magma args
+  magma-aux-loss: [true]
+  magma-loss-lambda: [2]
+  magma-modulo: [512]
+  patience: [20]
+
+iterative_args:
+  - split-file: [data/paired_spectra/csi2022/splits/csi_split_0.tsv]
+    save-dir: [split_0]
+  
+    # Use forward aug
+    forward-labels: [data/paired_spectra/csi2022/aug_iceberg_csi2022/biomols_filtered_smiles_csi2022_labels.tsv]
+    forward-aug-folder: [data/paired_spectra/csi2022/aug_iceberg_csi2022/csi_split_0/subforms/]
+    frac-orig: [0.5]
+
+    # Switch to cosine embeddings
+    form-embedder: [pos-cos]
+    embed-instrument: [false]
+    no-diffs: [true]

@@ -1,0 +1,51 @@
+launcher_args: {experiment_name: csi_fp_ffn,
+  script_name: src/mist/train_ffn_binned.py,
+  slurm_script: launcher_scripts/generic_slurm.sh, 
+  visible_devices: [0],
+  launch_method: local,
+}
+universal_args:
+  _slurm_args:
+  - {_num_gpu: 1, cpus-per-task: 6, job-name: ms-train, mem-per-cpu: 10G,
+    time: '1-18:00:00'}
+
+  cache-featurizers: [true]
+
+  labels-file: [data/paired_spectra/csi2022/labels.tsv]
+  subform-folder: [data/paired_spectra/csi2022/subformulae/subformulae_default/]
+  spec-folder: [data/paired_spectra/csi2022/spec_files/]
+  fp-file: [fingerprints/precomputed_fp/cache_csi_csi2022.h5]
+
+  # Debug
+  debug: [null]
+  fp-names:
+  - - csi
+  num-workers: [16]
+  persistent-workers: [false]
+  seed: [1]
+  gpus: [1]
+
+  # Data params
+  augment-data: [true]
+
+  # Learning
+  max-epochs: [600]
+  scheduler: [false]
+  batch-size: [64]
+  learning-rate: [8.7e-4]
+  weight-decay: [1.0e-07]
+  loss-fn: [cosine]
+
+  # Model params
+  hidden-size: [512]
+  num-spec-layers: [2]
+  num-bins: [11000]
+  spectra-dropout: [0.0]
+  patience: [20]
+  iterative-preds: [none]
+
+iterative_args:
+  - save-dir: [split_0]
+    split-file: [data/paired_spectra/csi2022/splits/csi_split_0.tsv]
+    embed-instrument: [false]
+    forward-labels: [false]
