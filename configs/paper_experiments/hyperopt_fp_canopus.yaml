@@ -1,0 +1,91 @@
+launcher_args: {experiment_name: 2022_10_24_canopus_hyperopt_mist,
+  script_name: run_scripts/hyperopt_mist.py,
+  slurm_script: launcher_scripts/generic_slurm.sh, 
+  visible_devices: [1, 2, 3],
+  launch_method: local
+}
+universal_args:
+  _slurm_args:
+  - {_num_gpu: 1, cpus-per-task: 6, job-name: ms-train, mem-per-cpu: 10G,
+    time: '1-18:00:00'}
+
+  cache-featurizers: [true]
+  dataset-name: [canopus_train]
+
+  # Debug
+  debug: [false]
+  fp-names:
+  - - morgan4096
+  num-workers: [12]
+  persistent-workers: [false]
+  seed: [1]
+
+  gpus: [1]
+  split-file: [data/paired_spectra/canopus_train/splits/canopus_hplus_100_0.csv]
+  split-sizes:
+  - [0.95, 0.05, 0.0]
+  splitter-name: [preset]
+
+  # Data augmentation
+  augment-data: [true]
+  augment-prob: [0.5]
+  batch-size: [32]
+  inten-prob: [0.1]
+  remove-prob: [0.5]
+  remove-weights: [exp]
+
+  # No iterative preds for debug
+  iterative-preds: [growing]
+  learning-rate: [0.0007]
+  weight-decay: [1.0e-07]
+
+  # Learning
+  max-epochs: [600]
+  min-lr: [5e-06] 
+  scheduler: [true] 
+  lr-decay-time: [10000]
+
+  # Model params
+  hidden-size: [256]
+  num-heads: [8]
+  pairwise-featurization: [true]
+  peak-attn-layers: [5]
+  refine-layers: [4]
+  set-pooling: [cls]
+  spectra-dropout: [0.1]
+  single-form-encoder: [true]
+  use-cls: [true]
+  cls-type: [ms1]
+
+  # Magma args
+  magma-aux-loss: [true]
+  frag-fps-loss-lambda: [8]
+  magma-modulo: [512]
+  patience: [20] 
+
+iterative_args:
+  - iterative-preds: [growing]
+    iterative-loss-weight: [0.5]
+    loss-fn: [cosine]
+    hidden-size: [256]
+
+    # LR
+    learning-rate: [7.0e-4]
+    lr-decay-time: [10000] 
+    lr-decay-frac: [0.95]
+
+    # High batch cosine
+    batch-size: [128] 
+
+    # adding forward specs
+    add-forward-specs: [true]
+    forward-aug-folder: [data/paired_spectra/canopus_train/morgan4096_spec_preds_fold_0/]
+    frac-orig: [0.5]
+
+    # Hyperopt args
+    cpus-per-trial: [12]
+    gpus-per-trial: [1]
+    num-h-samples: [100] 
+    grace-period: [900]
+    max-concurrent: [10]
+    tune-save: [true]

@@ -1,0 +1,81 @@
+launcher_args: {experiment_name: 2022_09_23_ffn_binned_hyperopt,
+  script_name: run_scripts/hyperopt_binned_ffn.py,
+  slurm_script: launcher_scripts/generic_slurm.sh, 
+  visible_devices: [0,1,2], 
+  launch_method: local
+}
+universal_args:
+  _slurm_args:
+  - {_num_gpu: 1, cpus-per-task: 6, job-name: ms-train, mem-per-cpu: 10G, time: '1-18:00:00'} 
+
+  cache-featurizers: [true]
+  dataset-name: [csi2022]
+
+  debug: [false]
+  fp-names:
+  - - csi
+  num-workers: [8]
+  persistent-workers: [false]
+  seed: [1]
+
+  gpus: [1]
+  split-file: [data/paired_spectra/csi2022/splits/csi_split_0.txt]
+  split-sizes:
+  - [0.95, 0.05, 0.0]
+  splitter-name: [preset]
+
+  # Data augmentation
+  augment-data: [false]
+  augment-prob: [0.5]
+  batch-size: [32]
+  inten-prob: [0.1]
+  remove-prob: [0.5]
+  remove-weights: [exp]
+
+  # No iterative preds for debug
+  iterative-preds: [none]
+  learning-rate: [0.0007]
+  weight-decay: [1.0e-07]
+
+  # Learning
+  max-epochs: [600]
+  min-lr: [5e-06] 
+  scheduler: [true] 
+  lr-decay-time: [10000] 
+
+  # Model params
+  hidden-size: [256]
+  num-spec-layers: [3]
+  num-bins: [3000]
+  spectra-dropout: [0.1]
+  patience: [60] 
+
+iterative_args:
+  - iterative-preds: [none]
+    iterative-loss-weight: [0.5] #0.5
+    loss-fn: [cosine]
+
+    # Model params
+    hidden-size: [256]
+    num-spec-layers: [3]
+    num-bins: [3000]
+    spectra-dropout: [0.1]
+
+    # LR
+    learning-rate: [7.0e-4]
+    lr-decay-frac: [0.95] 
+
+    # High batch cosine
+    batch-size: [64] 
+
+    # No adding ofrward specs
+    add-forward-specs: [false]
+    forward-aug-folder: [data/paired_spectra/csi2022/csi_spec_preds_fold_0/]
+    frac-orig: [0.5]
+
+    # Hyperopt args
+    cpus-per-trial: [8]
+    gpus-per-trial: [1]
+    num-h-samples: [100] 
+    grace-period: [5]
+    max-concurrent: [10]
