@@ -1,7 +1,7 @@
 # 🌫️ MIST: Metabolite Inference with Spectrum Transformers
 [![DOI](https://zenodo.org/badge/564051299.svg)](https://zenodo.org/badge/latestdoi/564051299)  
 
-This repository provides implementations and code examples for [Metabolite Inference with Spectrum Transformers (MIST)](https://www.nature.com/articles/s42256-023-00708-3). MIST models can be used to predict molecular fingerprints from tandem mass spectrometry data and, when trained in a contratsive learning framework, enable embedding and structure annotation by database lookup. Rather than directly embed binned spectra, MIST applies a transformer architecture to directly encode and learn to represent collections of chemical formula.  MIST has also since been extended to predict precursor chemical formulae as [MIST-CF](https://github.com/samgoldman97/mist-cf).
+This repository provides implementations and code examples for [Metabolite Inference with Spectrum Transformers (MIST)](https://www.nature.com/articles/s42256-023-00708-3). MIST models can be used to predict molecular fingerprints from tandem mass spectrometry data and, when trained in a contrastive learning framework, enable embedding and structure annotation by database lookup. Rather than directly embed binned spectra, MIST applies a transformer architecture to directly encode and learn to represent collections of chemical formula.  MIST has also since been extended to predict precursor chemical formulae as [MIST-CF](https://github.com/samgoldman97/mist-cf).
 
 _Samuel Goldman, Jeremy Wohlwend, Martin Strazar, Guy Haroush, Ramnik J. Xavier, Connor W. Coley_
 
@@ -24,7 +24,7 @@ __Update__: This branch provides an updated version of the MIST method for incre
 
 ## Install & setup <a name="setup"></a>
 
-After git cloning the repository, the enviornment and package can be installed.  Please note that the enviornment downloaded attempts to utilize cuda11.1. Please comment this line out in enviornment.yml if you do not plan to use gpu support prior to the commands below. We strongly recommend replacing conda with [mamba](https://mamba.readthedocs.io/en/latest/installation.html) for fast install (i.e., `mamba env create -f environment.yml`).
+After git cloning the repository, the environment and package can be installed.  Please note that the environment downloaded attempts to utilize cuda11.1. Please comment this line out in environment.yml if you do not plan to use gpu support prior to the commands below. We strongly recommend replacing conda with [mamba](https://mamba.readthedocs.io/en/latest/installation.html) for fast install (e.g., `mamba env create -f environment.yml`).
 
 ```
 conda env create -f environment.yml
@@ -38,7 +38,7 @@ This environment was tested on Ubuntu 20.04.1 with CUDA Version 11.4 . It takes 
 
 ## Quick start <a name="quickstart"></a>
 
-After creating a python enviornment, pretrained models can be used to: 
+After creating a python environment, pretrained models can be used to: 
 
 1. Predict fingerprints from spectra  (`quickstart/model_predictions/fp_preds/`)  
 2. Annotate spectra by ranking candidates in a reference smiles list (`quickstart/model_predictions/retrieval/`)  
@@ -54,10 +54,7 @@ conda activate ms-gen
 
 ```
 
-Output predictions can be found in `quickstart/model_predictions` and are
-included by default with the repository. We provide an additional  notebook
-`notebooks/mist_demo.ipynb` that shows these calls programmatically, rather
-than in the command line.
+Output predictions can be found in `quickstart/model_predictions` and are included by default with the repository. We provide an additional notebook `notebooks/mist_demo.ipynb` that shows these calls programmatically, rather than in the command line.
 
 ## Data <a name="data"></a>
 
@@ -68,17 +65,14 @@ Training models requires the use of paired mass spectra data and unpaired librar
 
 We utilize two datasets to train models: 
 
-1. **csi2022**: H+ Spectra from GNPS, NIST, MONA, and others kindly provided by    
-   Kai Duhrkop from the SIRIUS and CSI:FingerID team. This dataset is used to    
-   complete most benchmarking done.  
-2. **canopus\_train**: Public data extracted from GNPS and prepared by the 2021
-   CANOPUS methods paper. This has since been renamed "NPLIB1" in our subsequent papers.  
+1. **csi2022**: H+ Spectra from GNPS, NIST, MONA, and others kindly provided by Kai Duhrkop from the SIRIUS and CSI:FingerID team. This dataset is used to complete most benchmarking done.  
+2. **canopus\_train**: Public data extracted from GNPS and prepared by the 2021 CANOPUS methods paper. This has since been renamed "NPLIB1" in our subsequent papers.  
 
 Each paired spectra dataset will have the following standardized folders and components, living under a single dataset folder:  
  
 1. **labels.tsv**: A file containing the columns ["dataset", "spec", "name", "ionization", "formula", "smiles", "inchikey", "instrument"], where "smiles" coreresponds to an *achiral* version of the smiles string.      
 2. **spec\_files**: A directory containing each .ms file in the dataset    
-3. **subformulae**: Outputs of a subformula labeling program run on the corrresponding .ms directory     
+3. **subformulae**: Outputs of a subformula labeling program run on the corresponding .ms directory     
 4. **magma_outputs**: Outputs of a MAGMa program run on the corresponding spec files directory     
 5. **splits**: Splits contains all splits. These are in the form of a table with 2 columns including split name and category (train, val, test, or exclude)   
 6. **retrieval\_hdf**: Folder to hold hdf files used for retrieval and contrastive model training. Note we construct these with relevant isomers for the dataset.      
@@ -99,11 +93,11 @@ We intentionally do not include the retrieval HDF file in the data download, as 
 
 ### Unpaired molecules
 
-We consider processing three exmaple datasets to be used as unpaired molecules: _biomols_, a dataset of biologicaly-relevant molecules prepared by Duhrkop et al. for the CANOPUS manuscript, _hmdb_, the Human Metabolome Database, and _pubchem_, the most complete dataset of molecules. Instructions for downloading and processing each of these can be found in `data_processing/mol_libraries/`. 
+We consider processing three example datasets to be used as unpaired molecules: _biomols_, a dataset of biologicaly-relevant molecules prepared by Duhrkop et al. for the CANOPUS manuscript, _hmdb_, the Human Metabolome Database, and _pubchem_, the most complete dataset of molecules. Instructions for downloading and processing each of these can be found in `data_processing/mol_libraries/`. 
 
 MIST uses these databases of molecules (without spectra) in two ways: 
 
-1. _Data augmentation_: To train our models, we utilize an auxilary forward molecule-to-spectrum model to add training examples to the dataset. The primary requirements are that these augmented spectra are provided as a labels file and an mgf file. We provide an example of this in the `data/paired_spectra/canopus_train/aug_iceberg_canopus_train/`. See the [ms-pred github repository](https://github.com/samgoldman97/ms-pred) for details on training a model and exporting an mgf. See `data_processing/canopus_train/04_subset_smis.sh` for how we subsetted the biomolecules dataset to create labels for the ms-pred prediction and `data_processing/canopus_train/05_buid_aug_mgf.sh` for how we process the resulting mgf into subformulae assignments after export.  
+1. _Data augmentation_: To train our models, we utilize an auxiliary forward molecule-to-spectrum model to add training examples to the dataset. The primary requirements are that these augmented spectra are provided as a labels file and an mgf file. We provide an example of this in the `data/paired_spectra/canopus_train/aug_iceberg_canopus_train/`. See the [ms-pred github repository](https://github.com/samgoldman97/ms-pred) for details on training a model and exporting an mgf. See `data_processing/canopus_train/04_subset_smis.sh` for how we subsetted the biomolecules dataset to create labels for the ms-pred prediction and `data_processing/canopus_train/05_buid_aug_mgf.sh` for how we process the resulting mgf into subformulae assignments after export.  
 2. _Retrieval libraries_: A second use for these libraries is to build retrieval databases or as contrastive decoys. See `data_processing/canopus_train/03_retrieval_hdf.py` for call signatures to construct both of these, after creating a mapping of chem formula to smiles (e.g., `data_processing/mol_libraries/pubchem/02_make_formula_subsets.sh`).  
 
 
@@ -192,42 +186,26 @@ CUDA_VISIBLE_DEVICES=0 python src/mist/train_contrastive.py \
 
 ## Experiments <a name="paper"></a>   
 
-We detail our pipeline for executing updated experiments below.
-Because the comparisons on the CSI dataset require proprietary data, some will
-not be runnable. The execution and scripts are included here to help illustrate
-the logic. Results are precomputed and shown in the analysis notebooks (`notebooks/`).
+We detail our pipeline for executing updated experiments below. Because the comparisons on the CSI dataset require proprietary data, some will not be runnable. The execution and scripts are included here to help illustrate the logic. Results are precomputed and shown in the analysis notebooks (`notebooks/`).
 
 
 ### Dataset analysis
 
-We provide summary statistics and chemical classifications of the CANOPUS
-(NPLIB1) dataset and combined dataset in `notebooks/dataset_analysis.ipynb`.
-The chemical classes are assigned using NPClassifier, which is run via the GNPS
-endpoint. This is accessed in `run_scripts/dataset_analysis/chem_classify.py`.
+We provide summary statistics and chemical classifications of the CANOPUS (NPLIB1) dataset and combined dataset in `notebooks/dataset_analysis.ipynb`. The chemical classes are assigned using NPClassifier, which is run via the GNPS endpoint. This is accessed in `run_scripts/dataset_analysis/chem_classify.py`.
 
 ### Hyperparameter optimization
 
-Hyperparameters were previously optimized using Ray Tune and Optuna as
-described in the released paper. We use a variation of these parameters by
-default, but provide additional scripts demonstrating the workflow for how to
-tune parameters. See `run_scripts/hyperopt/`.
+Hyperparameters were previously optimized using Ray Tune and Optuna as described in the released paper. We use a variation of these parameters by default, but provide additional scripts demonstrating the workflow for how to tune parameters. See `run_scripts/hyperopt/`.
 
 ### CSI fingerprint comparison
 
-We compare four models using the partially proprietary CSI2022 dataset that
-includes NIST. These models are a feed forward network (FFN), Sinusoidal
-Transformer, MIST, and CSI:FingerID (as provided by the authors).
-Configurations for these models can be found and edited in
-`configs/csi_compare`. The models themselves can be trained  by running the
-following scripts:
+We compare four models using the partially proprietary CSI2022 dataset that includes NIST. These models are a feed forward network (FFN), Sinusoidal Transformer, MIST, and CSI:FingerID (as provided by the authors). Configurations for these models can be found and edited in `configs/csi_compare`. The models themselves can be trained by running the following scripts:
 
 1. `. run_scripts/csi_fp_compare/train_ffn.sh`   
 2. `. run_scripts/csi_fp_compare/train_xformer.sh`   
 3. `. run_scripts/csi_fp_compare/train_mist.sh`   
 
-After training models, predictions can be made with `python
-run_scripts/csi_fp_compare/eval_models.py`. Results are analyzed generating
-partial paper figures in `notebooks/fp_csi_compare.ipynb`
+After training models, predictions can be made with `python run_scripts/csi_fp_compare/eval_models.py`. Results are analyzed generating partial paper figures in `notebooks/fp_csi_compare.ipynb`
 
 To compare against this in future iterations, we recommend comparing against the following splits: 
 
@@ -243,7 +221,7 @@ After training fingerprint models, a single contrastive model can be trained on 
 . run_scripts/csi_retrieval_compare/train_contrastive.sh
 ```
 
-With both trained fingerprint models and conrtastive models, retrieval can be executed and evaluated:
+With both trained fingerprint models and contrastive models, retrieval can be executed and evaluated:
 
 ```
 
@@ -306,7 +284,7 @@ We use two types of models for public retrieval: MIST FP and MIST contrastive mo
 
 ```
 
-With both trained fingerprint models and conrtastive models, retrieval can be executed and evaluated:
+With both trained fingerprint models and contrastive models, retrieval can be executed and evaluated:
 
 ```
 python run_scripts/canopus_compare/retrieval_fp.py
@@ -328,13 +306,13 @@ We detail changes since the published MIST manuscript.
 4. **Adam optimizer**: We have switched from RAdam to Adam to reduce external dependencies.
 5. **External forward augmentation**: A key component of MIST is that we trained on augmented, predicted spectra. This module was previously included _within_ the MIST code repository. We have since developed an external repository, [MS-pred](https://github.com/samgoldman97/ms-pred). As a result, we now only include scripts to process a labels file and MGF file into subformula assignments (i.e., for a additional supervision to MIST) with the expectation that forward models can be trained and used for prediction in a separate repository. In the trained models and examples, external augmentation is conducted using the ICEBERG model (trained on same train/test splits). It is still imperative to exclude the test set molecules from the augmentation set.
 6. **Model simplifications**: We simplify the MIST architecture as in MIST-CF so that all inputs to the transformer are concatenated once, passed through the transformer, pooled, and run through an MLP. This is different from the original architecture that included multiple layers of MLPs prior to the transformer. 
-7. **Model covariates**: We have added optionality to encode instrument types, multiple adduct types, and also the differences between each subformula peak into the model. It would be straigthforward to train a new model on a dataset that includes adducts outside of H+.   
+7. **Model covariates**: We have added optionality to encode instrument types, multiple adduct types, and also the differences between each subformula peak into the model. It would be straightforward to train a new model on a dataset that includes adducts outside of H+.   
 8. **Minor parameter changes**: Minor parameters have been changed throughout (e.g., the number of augmented spectra from 300k to 200k). Pelase refer to config files as the gold standard for how experiments were conducted. 
 9. **MAGMa labeling**: The implementation for MAGMa has been simplified and now fingerprinting is conducted with an internal re-implementation of the circular fingerprinting algorithm `src/mist/magma/frag_fp.py`. 
 
 
 **Analysis changes**    
-1. **Worst case retrieval**: Previously, we optimistically reported retrieval. That is, if 2 compounds tied in distance, we reported the lower of the two. Herein, we have switched analysis to the worst case (i.e,. the higher/worse ranking of the tied compounds). This conservatively underestimates performance in line with analysis we have done in the forward modeling direction (spec-to-mol).   
+1. **Worst case retrieval**: Previously, we optimistically reported retrieval. That is, if 2 compounds tied in distance, we reported the lower of the two. Herein, we have switched analysis to the worst case (i.e,. the higher/worse ranking of the tied compounds). This conservatively underestimates performance in line with analysis we have done in the forward modeling direction (mol-to-spec).   
 2. **Jupyter notebooks**: Analysis is now conducted in Jupyter notebooks rather than scripts.   
 
 
@@ -344,7 +322,7 @@ We detail changes since the published MIST manuscript.
 3. **Easier quickstart**: The quickstart demo has been reduced to 2 scripts (model download and execution).  
 4. **Split formats**: The splits have all been reformatted as TSV files instead of .txt and .csv extensions.  
 5. **Prospective removal**: We have removed the prospective analysis from this code. It is still accessible in the original paper branch.   
-6. **HDF Simplificaitons**: HDF Files have been simplified to reduce the number of necessary additional files for model training. Fingerprints have been stored as packed bit vectors
+6. **HDF Simplifications**: HDF Files have been simplified to reduce the number of necessary additional files for model training. Fingerprints have been stored as packed bit vectors
 
 
 ## Citations <a name="citations"></a>  
