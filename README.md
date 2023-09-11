@@ -54,10 +54,7 @@ conda activate ms-gen
 
 ```
 
-Output predictions can be found in `quickstart/model_predictions` and are
-included by default with the repository. We provide an additional  notebook
-`notebooks/mist_demo.ipynb` that shows these calls programmatically, rather
-than in the command line.
+Output predictions can be found in `quickstart/model_predictions` and are included by default with the repository. We provide an additional notebook `notebooks/mist_demo.ipynb` that shows these calls programmatically, rather than in the command line.
 
 ## Data <a name="data"></a>
 
@@ -68,11 +65,8 @@ Training models requires the use of paired mass spectra data and unpaired librar
 
 We utilize two datasets to train models: 
 
-1. **csi2022**: H+ Spectra from GNPS, NIST, MONA, and others kindly provided by    
-   Kai Duhrkop from the SIRIUS and CSI:FingerID team. This dataset is used to    
-   complete most benchmarking done.  
-2. **canopus\_train**: Public data extracted from GNPS and prepared by the 2021
-   CANOPUS methods paper. This has since been renamed "NPLIB1" in our subsequent papers.  
+1. **csi2022**: H+ Spectra from GNPS, NIST, MONA, and others kindly provided by Kai Duhrkop from the SIRIUS and CSI:FingerID team. This dataset is used to complete most benchmarking done.  
+2. **canopus\_train**: Public data extracted from GNPS and prepared by the 2021 CANOPUS methods paper. This has since been renamed "NPLIB1" in our subsequent papers.  
 
 Each paired spectra dataset will have the following standardized folders and components, living under a single dataset folder:  
  
@@ -192,42 +186,26 @@ CUDA_VISIBLE_DEVICES=0 python src/mist/train_contrastive.py \
 
 ## Experiments <a name="paper"></a>   
 
-We detail our pipeline for executing updated experiments below.
-Because the comparisons on the CSI dataset require proprietary data, some will
-not be runnable. The execution and scripts are included here to help illustrate
-the logic. Results are precomputed and shown in the analysis notebooks (`notebooks/`).
+We detail our pipeline for executing updated experiments below. Because the comparisons on the CSI dataset require proprietary data, some will not be runnable. The execution and scripts are included here to help illustrate the logic. Results are precomputed and shown in the analysis notebooks (`notebooks/`).
 
 
 ### Dataset analysis
 
-We provide summary statistics and chemical classifications of the CANOPUS
-(NPLIB1) dataset and combined dataset in `notebooks/dataset_analysis.ipynb`.
-The chemical classes are assigned using NPClassifier, which is run via the GNPS
-endpoint. This is accessed in `run_scripts/dataset_analysis/chem_classify.py`.
+We provide summary statistics and chemical classifications of the CANOPUS (NPLIB1) dataset and combined dataset in `notebooks/dataset_analysis.ipynb`. The chemical classes are assigned using NPClassifier, which is run via the GNPS endpoint. This is accessed in `run_scripts/dataset_analysis/chem_classify.py`.
 
 ### Hyperparameter optimization
 
-Hyperparameters were previously optimized using Ray Tune and Optuna as
-described in the released paper. We use a variation of these parameters by
-default, but provide additional scripts demonstrating the workflow for how to
-tune parameters. See `run_scripts/hyperopt/`.
+Hyperparameters were previously optimized using Ray Tune and Optuna as described in the released paper. We use a variation of these parameters by default, but provide additional scripts demonstrating the workflow for how to tune parameters. See `run_scripts/hyperopt/`.
 
 ### CSI fingerprint comparison
 
-We compare four models using the partially proprietary CSI2022 dataset that
-includes NIST. These models are a feed forward network (FFN), Sinusoidal
-Transformer, MIST, and CSI:FingerID (as provided by the authors).
-Configurations for these models can be found and edited in
-`configs/csi_compare`. The models themselves can be trained  by running the
-following scripts:
+We compare four models using the partially proprietary CSI2022 dataset that includes NIST. These models are a feed forward network (FFN), Sinusoidal Transformer, MIST, and CSI:FingerID (as provided by the authors). Configurations for these models can be found and edited in `configs/csi_compare`. The models themselves can be trained by running the following scripts:
 
 1. `. run_scripts/csi_fp_compare/train_ffn.sh`   
 2. `. run_scripts/csi_fp_compare/train_xformer.sh`   
 3. `. run_scripts/csi_fp_compare/train_mist.sh`   
 
-After training models, predictions can be made with `python
-run_scripts/csi_fp_compare/eval_models.py`. Results are analyzed generating
-partial paper figures in `notebooks/fp_csi_compare.ipynb`
+After training models, predictions can be made with `python run_scripts/csi_fp_compare/eval_models.py`. Results are analyzed generating partial paper figures in `notebooks/fp_csi_compare.ipynb`
 
 To compare against this in future iterations, we recommend comparing against the following splits: 
 
