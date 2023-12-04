@@ -10,7 +10,7 @@ res_subform=$res_dir/subforms/
 mkdir -p $res_subform
 
 # Create subform labels
-python src/mist/subformulae/assign_subformulae.py \
+python3 src/mist/subformulae/assign_subformulae.py \
     --spec-files $spec_mgf \
     --labels-file $labels \
     --mass-diff-thresh 20 \
